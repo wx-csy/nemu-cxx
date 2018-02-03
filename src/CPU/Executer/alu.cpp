@@ -117,6 +117,10 @@ void Executer<T>::ROR() {
   update_ZFSFPF(*dest = (*dest >> temp) | (*dest << (-temp & mask)));
 }
 
+template <typename T>
+void Executer<T>::SETCC() {
+  *dest = cpu.regs.getcc(decoder.opcode & 0xf);
+}
 template class Executer<uint8_t>;
 template class Executer<uint16_t>;
 template class Executer<uint32_t>;

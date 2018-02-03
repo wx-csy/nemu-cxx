@@ -14,10 +14,9 @@ struct Decoder {
   SIZE operand_size;
   void *src, *dest; 
   uint32_t op_immd;
-
-private:
   uint8_t opcode, opcode_ext;
 
+private:
   void* memory_access(vaddr_t addr, SIZE sz);
 
   void* decop_immd();
@@ -46,6 +45,16 @@ private:
  
   // Ternary decoder
   void dec_I_E2G(); // for imul, the imm must be accessed thru op_immd
+};
+
+template <typename T> 
+struct Executer;
+
+struct decode_entry {
+  void (Decoder::*decode_helper)();
+  void (Executer<uint8_t>::*exec_8_helper)();
+  void (Executer<uint16_t>::*exec_16_helper)();
+  void (Executer<uint32_t>::*exec_32_helper)();
 };
 
 

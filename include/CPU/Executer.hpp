@@ -12,12 +12,14 @@ struct Executer {
       "Template argument for `Executer' must be unsigned!");
 
   typedef typename std::make_signed<T>::type ST;
-
+  
+  Decoder& decoder;
   CPU& cpu;
   T *const &src, *const &dest;
   const T* const immd;
 
   Executer(Decoder& decoder) :
+    decoder(decoder),
     cpu(decoder.cpu),
     src(reinterpret_cast<T*&>(decoder.src)), 
     dest(reinterpret_cast<T*&>(decoder.dest)),
@@ -43,7 +45,8 @@ struct Executer {
   void SAR();
   void ROL();
   void ROR();
-  
+  void SETCC();
+
   // data-mov instructions
   void MOV();
   void XCHG();
@@ -57,6 +60,13 @@ struct Executer {
   void MOVZB(); // movzbw and movzbl
   void MOVZW(); // movsbw and movsbl
   void LEA();
+
+  // control instructions
+  void JMP();
+  void JCC();
+  void CALL();
+  void RET();
+
 private:
   void update_ZFSFPF(T x) {
     cpu.regs.eflags.ZF = (x == 0);

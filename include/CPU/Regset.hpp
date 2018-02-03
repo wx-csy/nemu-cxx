@@ -58,6 +58,7 @@ struct Regset {
       case CC_P:  result = eflags.PF; break;
       case CC_L:  result = eflags.SF != eflags.OF; break;
       case CC_LE: result = eflags.ZF || eflags.SF != eflags.OF; break;
+      default:    panic("Unexpected conditional code!");
     }
     if (subcode & 1) result = !result;
     return result;
