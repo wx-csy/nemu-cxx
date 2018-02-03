@@ -42,6 +42,26 @@ struct Regset {
       default:      panic("Unexpected register size!");
     }
   }
+
+  bool getcc(uint8_t subcode) {
+    enum {
+      CC_O, CC_NO, CC_B, CC_NB, CC_E, CC_NE, CC_BE, CC_NBE,
+      CC_S, CC_NS, CC_P, CC_NP, CC_L, CC_NL, CC_LE, CC_NLE
+    };
+    bool result;
+    switch (subcode & (~1)) {
+      case CC_O:  result = eflags.OF; break;
+      case CC_B:  result = eflags.CF; break;
+      case CC_E:  result = eflags.ZF; break;
+      case CC_BE: result = eflags.CF || eflags.ZF; break;
+      case CC_S:  result = eflags.SF; break;
+      case CC_P:  result = eflags.PF; break;
+      case CC_L:  result = eflags.SF != eflags.OF; break;
+      case CC_LE: result = eflags.ZF || eflags.SF != eflags.OF; break;
+    }
+    if (subcode & 1) result = !result;
+    return result;
+  }
 };
 
 #endif
