@@ -1,31 +1,6 @@
 #include "common.h"
 #include "cpu.h"
 
-template <typename T>
-static inline T instr_fetch(CPU& cpu) {
-  T temp = cpu.mmu.vaddr_read<T>(cpu.regs.eip);
-  cpu.regs.eip += sizeof(T);
-  return temp;
-} 
-
-static inline uint32_t instr_vfetch(CPU& cpu, SIZE sz) {
-  switch (sz) {
-    case SIZE_8:  return instr_fetch<uint8_t>(cpu);
-    case SIZE_16: return instr_fetch<uint16_t>(cpu);
-    case SIZE_32: return instr_fetch<uint32_t>(cpu);
-    default:      panic("Unexpected operand size!");
-  }
-}
-
-static inline int32_t instr_vfetch_sext(CPU& cpu, SIZE sz) {
-  switch (sz) {
-    case SIZE_8:  return (int8_t)instr_fetch<uint8_t>(cpu);
-    case SIZE_16: return (int16_t)instr_fetch<uint16_t>(cpu);
-    case SIZE_32: return (int32_t)instr_fetch<uint32_t>(cpu);
-    default:      panic("Unexpected operand size!");
-  }
-}
-
 struct ModRM_Decoder {
   struct {
     uint8_t R_M     :3;
@@ -36,7 +11,9 @@ struct ModRM_Decoder {
   Decoder& decoder;
 
   ModRM_Decoder(Decoder& decoder) : decoder(decoder) {
-    reinterpret_cast<uint8_t&>(modrm) = instr_fetch<uint8_t>(decoder.cpu);
+    reinterpret_cast<uint8_t&>(modrm) = 
+      decoder.cpu.instr_fetch<uint8_t>();
+    decoder.opcode_ext = modrm.reg_op;
   }
  
   void* get_reg_ptr() {
@@ -58,7 +35,8 @@ struct ModRM_Decoder {
         uint8_t index :3;
         uint8_t ss    :2;
       } sib;
-      reinterpret_cast<uint8_t&>(sib) = instr_fetch<uint8_t>(decoder.cpu);
+      reinterpret_cast<uint8_t&>(sib) = 
+        decoder.cpu.instr_fetch<uint8_t>();
       base_reg = sib.base;
       scale = sib.ss;
 
@@ -72,7 +50,7 @@ struct ModRM_Decoder {
     } else if (modrm.mod == 1) disp_size = SIZE_8;
 
     if (disp_size) {
-      disp = instr_vfetch_sext(decoder.cpu, disp_size);
+      disp = decoder.cpu.instr_vfetch_sext(disp_size);
       addr += disp;
     }
   
@@ -91,10 +69,18 @@ struct ModRM_Decoder {
       return decoder.cpu.regs.get_reg_ptr(modrm.R_M, 
           decoder.operand_size);
     } else {
-      return decoder.memory_access(get_mem_vaddr(), decoder.operand_size); 
+      return decoder.memory_access(get_mem_vaddr(), 
+          decoder.operand_size); 
     }
   }
   
+  void* get_rm_ptr(SIZE sz) {
+    if (modrm.mod == 3) {
+      return decoder.cpu.regs.get_reg_ptr(modrm.R_M, sz);
+    } else {
+      return decoder.memory_access(get_mem_vaddr(), sz);
+    }
+  }
 };
 
 Decoder::Decoder(CPU& cpu) : cpu(cpu) {
@@ -111,12 +97,12 @@ inline void* Decoder::memory_access(vaddr_t addr, SIZE sz) {
 
 
 inline void* Decoder::decop_immd() {
-  op_immd = instr_vfetch(cpu, operand_size);
+  op_immd = cpu.instr_vfetch(operand_size);
   return &op_immd;
 }
 
 inline void* Decoder::decop_simmd() {
-  op_immd = instr_vfetch_sext(cpu, operand_size);
+  op_immd = cpu.instr_vfetch_sext(operand_size);
   return &op_immd;
 }
 
@@ -129,7 +115,7 @@ inline void* Decoder::decop_reg() {
 }
 
 inline void* Decoder::decop_offset() {
-  uint32_t addr = instr_vfetch_sext(cpu, operand_size);
+  uint32_t addr = cpu.instr_vfetch_sext(operand_size);
   return memory_access(addr, operand_size);
 }
 
@@ -147,6 +133,19 @@ void Decoder::dec_E2G() {
   ModRM_Decoder modrm_dec(*this);
   dest = modrm_dec.get_reg_ptr();
   src = modrm_dec.get_rm_ptr();
+}
+
+// r/m (byte) -> reg
+void Decoder::dec_Eb2G() {
+  ModRM_Decoder modrm_dec(*this);
+  dest = modrm_dec.get_reg_ptr();
+  src = modrm_dec.get_rm_ptr(SIZE_8); 
+}
+
+void Decoder::dec_Ew2G() {
+  ModRM_Decoder modrm_dec(*this);
+  dest = modrm_dec.get_reg_ptr();
+  src = modrm_dec.get_rm_ptr(SIZE_16);
 }
 
 // r/m (mem only) -> reg (for lea only)

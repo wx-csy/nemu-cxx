@@ -6,7 +6,6 @@
 
 struct MMU {
   Memory &memory;
-  void* pmem_off;
 
   MMU(Memory &memory);  
 
