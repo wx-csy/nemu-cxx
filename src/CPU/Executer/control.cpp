@@ -1,28 +1,28 @@
 #include "common.h"
-#include "CPU/Executer.hpp"
+#include "CPU.hpp"
 
 template <typename T>
-void Executer<T>::JMP() {
-  cpu.regs.eip = *dest;
+void CPU::Executer<T>::JMP() {
+  cpu.eip = *dest;
 }
 
 template <typename T>
-void Executer<T>::JCC() {
-  if (cpu.regs.getcc(decoder.opcode & 0xf)) cpu.regs.eip = *dest;
+void CPU::Executer<T>::JCC() {
+  if (cpu.getcc(cpu.opcode & 0xf)) cpu.eip = *dest;
 }
 
 template <typename T>
-void Executer<T>::CALL() {
-  push(cpu.regs.eip);
-  cpu.regs.eip = *dest;
+void CPU::Executer<T>::CALL() {
+  push(cpu.eip);
+  cpu.eip = *dest;
 }
 
 template <typename T>
-void Executer<T>::RET() {
-
+void CPU::Executer<T>::RET() {
+  cpu.eip = pop();
 }
 
-template class Executer<uint8_t>;
-template class Executer<uint16_t>;
-template class Executer<uint32_t>;
+template class CPU::Executer<uint8_t>;
+template class CPU::Executer<uint16_t>;
+template class CPU::Executer<uint32_t>;
 

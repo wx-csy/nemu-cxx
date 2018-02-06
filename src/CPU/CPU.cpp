@@ -1,6 +1,6 @@
 #include "common.h"
-#include "CPU/CPU.hpp"
+#include "CPU.hpp"
 #include "Memory.hpp"
 
-CPU::CPU(Memory& memory):mmu(memory) {}
+CPU::CPU(Memory& memory):memory(memory) {}
 

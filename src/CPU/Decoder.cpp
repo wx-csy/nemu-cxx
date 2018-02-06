@@ -1,5 +1,5 @@
 #include "common.h"
-#include "cpu.h"
+#include "CPU.hpp"
 
 struct ModRM_Decoder {
   struct {
@@ -8,17 +8,15 @@ struct ModRM_Decoder {
     uint8_t mod     :2;
   } modrm;
   
-  Decoder& decoder;
+  CPU& cpu;
 
-  ModRM_Decoder(Decoder& decoder) : decoder(decoder) {
-    reinterpret_cast<uint8_t&>(modrm) = 
-      decoder.cpu.instr_fetch<uint8_t>();
-    decoder.opcode_ext = modrm.reg_op;
+  ModRM_Decoder(CPU& cpu) : cpu(cpu) {
+    reinterpret_cast<uint8_t&>(modrm) = cpu.instr_fetch<uint8_t>();
+    cpu.opcode_ext = modrm.reg_op;
   }
  
   void* get_reg_ptr() {
-    return decoder.cpu.regs.get_reg_ptr(modrm.reg_op, 
-        decoder.operand_size);
+    return cpu.get_reg_ptr(modrm.reg_op, cpu.operand_size);
   }
 
   vaddr_t get_mem_vaddr() {
@@ -35,11 +33,9 @@ struct ModRM_Decoder {
         uint8_t index :3;
         uint8_t ss    :2;
       } sib;
-      reinterpret_cast<uint8_t&>(sib) = 
-        decoder.cpu.instr_fetch<uint8_t>();
+      reinterpret_cast<uint8_t&>(sib) = cpu.instr_fetch<uint8_t>();
       base_reg = sib.base;
       scale = sib.ss;
-
       if (sib.index != 4) index_reg = sib.index;
     } else {
       base_reg = modrm.R_M;
@@ -50,15 +46,15 @@ struct ModRM_Decoder {
     } else if (modrm.mod == 1) disp_size = SIZE_8;
 
     if (disp_size) {
-      disp = decoder.cpu.instr_vfetch_sext(disp_size);
+      disp = cpu.instr_vfetch_sext(disp_size);
       addr += disp;
     }
   
     if (base_reg != -1) 
-      addr += decoder.cpu.regs.gpr[base_reg]._32;
+      addr += cpu.gpr[base_reg]._32;
   
     if (index_reg != -1) {
-      addr += decoder.cpu.regs.gpr[index_reg]._32 << scale;
+      addr += cpu.gpr[index_reg]._32 << scale;
     }
   
     return addr;
@@ -66,90 +62,75 @@ struct ModRM_Decoder {
   
   void* get_rm_ptr() {
     if (modrm.mod == 3) {
-      return decoder.cpu.regs.get_reg_ptr(modrm.R_M, 
-          decoder.operand_size);
+      return cpu.get_reg_ptr(modrm.R_M, cpu.operand_size);
     } else {
-      return decoder.memory_access(get_mem_vaddr(), 
-          decoder.operand_size); 
+      return cpu.memory_access(get_mem_vaddr(), 
+          cpu.operand_size); 
     }
   }
   
   void* get_rm_ptr(SIZE sz) {
     if (modrm.mod == 3) {
-      return decoder.cpu.regs.get_reg_ptr(modrm.R_M, sz);
+      return cpu.get_reg_ptr(modrm.R_M, sz);
     } else {
-      return decoder.memory_access(get_mem_vaddr(), sz);
+      return cpu.memory_access(get_mem_vaddr(), sz);
     }
   }
 };
 
-Decoder::Decoder(CPU& cpu) : cpu(cpu) {
-  operand_size = SIZE_32;
-}
-
-Decoder::~Decoder() {
-
-}
-
-inline void* Decoder::memory_access(vaddr_t addr, SIZE sz) {
-  return cpu.mmu.memory.pmem + cpu.mmu.address_translate(addr);
-}
-
-
-inline void* Decoder::decop_immd() {
-  op_immd = cpu.instr_vfetch(operand_size);
+inline void* CPU::decode_op_immd() {
+  op_immd = instr_vfetch(operand_size);
   return &op_immd;
 }
 
-inline void* Decoder::decop_simmd() {
-  op_immd = cpu.instr_vfetch_sext(operand_size);
+inline void* CPU::decode_op_simmd() {
+  op_immd = instr_vfetch_sext(operand_size);
   return &op_immd;
 }
 
-inline void* Decoder::decop_regA() {
-  return &cpu.regs.eax;
+inline void* CPU::decode_op_regA() {
+  return &eax;
 }
 
-inline void* Decoder::decop_reg() {
-  return cpu.regs.get_reg_ptr(opcode & 0x7, operand_size);
+inline void* CPU::decode_op_reg() {
+  return get_reg_ptr(opcode & 0x7, operand_size);
 }
 
-inline void* Decoder::decop_offset() {
-  uint32_t addr = cpu.instr_vfetch_sext(operand_size);
+inline void* CPU::decode_op_offset() {
+  uint32_t addr = instr_vfetch_sext(operand_size);
   return memory_access(addr, operand_size);
 }
 
 
-
 // reg -> r/m
-void Decoder::dec_G2E() {
+void CPU::decode_G2E() {
   ModRM_Decoder modrm_dec(*this);
   dest = modrm_dec.get_rm_ptr();
   src = modrm_dec.get_reg_ptr();
 }
 
 // r/m -> reg
-void Decoder::dec_E2G() {
+void CPU::decode_E2G() {
   ModRM_Decoder modrm_dec(*this);
   dest = modrm_dec.get_reg_ptr();
   src = modrm_dec.get_rm_ptr();
 }
 
 // r/m (byte) -> reg
-void Decoder::dec_Eb2G() {
+void CPU::decode_Eb2G() {
   ModRM_Decoder modrm_dec(*this);
   dest = modrm_dec.get_reg_ptr();
   src = modrm_dec.get_rm_ptr(SIZE_8); 
 }
 
-void Decoder::dec_Ew2G() {
+void CPU::decode_Ew2G() {
   ModRM_Decoder modrm_dec(*this);
   dest = modrm_dec.get_reg_ptr();
   src = modrm_dec.get_rm_ptr(SIZE_16);
 }
 
 // r/m (mem only) -> reg (for lea only)
-void Decoder::dec_M2G_lea() {
+void CPU::decode_M2G_lea() {
   ModRM_Decoder modrm_dec(*this);
   dest = modrm_dec.get_reg_ptr(); 
   Assert(modrm_dec.modrm.mod != 3, "Invalid lea operand! (#UD)");
@@ -157,41 +138,41 @@ void Decoder::dec_M2G_lea() {
   src = &op_immd;
 }
 
-void Decoder::dec_I2a() {
-  dest = decop_regA();
-  src = decop_immd();
+void CPU::decode_I2a() {
+  dest = decode_op_regA();
+  src = decode_op_immd();
 }
 
-void Decoder::dec_I_E2G() {
-  dec_E2G();
-  decop_immd();
+void CPU::decode_I_E2G() {
+  decode_E2G();
+  decode_op_immd();
 }
 
-void Decoder::dec_I2E() {
+void CPU::decode_I2E() {
   ModRM_Decoder modrm_dec(*this);
   dest = modrm_dec.get_rm_ptr();
-  src = decop_immd();
+  src = decode_op_immd();
 }
 
-void Decoder::dec_I2r() {
-  dest = decop_reg();
-  src = decop_immd();
+void CPU::decode_I2r() {
+  dest = decode_op_reg();
+  src = decode_op_immd();
 }
 
-void Decoder::dec_I() {
-  dest = decop_immd();
+void CPU::decode_I() {
+  dest = decode_op_immd();
 }
 
-void Decoder::dec_r() {
-  dest = decop_reg();
+void CPU::decode_r() {
+  dest = decode_op_reg();
 }
 
-void Decoder::dec_E() {
+void CPU::decode_E() {
   ModRM_Decoder modrm_dec(*this);
   dest = modrm_dec.get_rm_ptr();
 }
 
-void Decoder::dec_I_test() {
-  src = decop_immd();
+void CPU::decode_I_test() {
+  src = decode_op_immd();
 }
 

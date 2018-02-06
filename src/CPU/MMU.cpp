@@ -1,10 +1,11 @@
 #include "common.h"
-#include "CPU/MMU.hpp"
-#include "Memory.hpp"
+#include "CPU.hpp"
 
-MMU::MMU(Memory& memory):memory(memory) {}
-
-paddr_t MMU::address_translate(vaddr_t addr) {
+paddr_t CPU::address_translate(vaddr_t addr) {
   return addr;
+}
+
+void* CPU::memory_access(vaddr_t addr, SIZE sz) {
+  return memory.pmem + address_translate(addr);
 }
 

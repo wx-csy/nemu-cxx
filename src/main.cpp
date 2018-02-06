@@ -1,6 +1,6 @@
 #include "common.h"
 #include "Memory.hpp"
-#include "CPU/CPU.hpp"
+#include "CPU.hpp"
 
 Memory mem;
 CPU cpu(mem);
