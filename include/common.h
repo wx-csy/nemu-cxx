@@ -6,7 +6,7 @@
 
 #include <cstdint>
 #include <cstddef>
-
+#include <cstdio>
 #include "debug.h"
 #include "log.h"
 

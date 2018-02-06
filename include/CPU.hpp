@@ -7,8 +7,8 @@
 
 struct CPU {
   Memory& memory;
-  CPU(Memory&);
-  
+  CPU(Memory& memory); 
+
   // ---------- General Purpose Register Set ----------
   union {
     struct {
@@ -153,7 +153,7 @@ struct CPU {
     CPU& cpu;
     T *const &dest, *const &src;
 
-    Executer(CPU& cpu) :
+    Executer(CPU cpu) :
       cpu(cpu),
       dest(reinterpret_cast<T*&>(cpu.dest)),
       src(reinterpret_cast<T*&>(cpu.src)) {}
@@ -218,9 +218,11 @@ struct CPU {
       cpu.esp += 4;
       return temp;
     }
-};
-
-
+  };
+  
+  Executer<uint32_t> exec32;
+  Executer<uint16_t> exec16;
+  Executer<uint8_t> exec8;
 };
 
 #endif
