@@ -176,3 +176,12 @@ void CPU::decode_I_test() {
   src = decode_op_immd();
 }
 
+void CPU::decode_wrapper() {
+  opcode = instr_fetch<uint8_t>();
+  current_decode_entry = &opcode_table[opcode];
+  do {
+    if (current_decode_entry->decode_helper)
+      (this->*(current_decode_entry->decode_helper))();
+  } while (!current_decode_entry->is_instr);
+}
+

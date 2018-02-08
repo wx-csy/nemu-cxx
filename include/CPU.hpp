@@ -117,12 +117,32 @@ struct CPU {
   uint32_t op_immd;
   uint8_t opcode, opcode_ext;
 
+  template <typename T> struct Executer;
+
+  struct decode_entry {
+    void (CPU::*decode_helper)();
+    void (CPU::Executer<uint32_t>::*exec32_helper)();
+    void (CPU::Executer<uint16_t>::*exec16_helper)();
+    void (CPU::Executer<uint8_t>::*exec8_helper)();
+    SIZE default_operand_size;
+    bool is_instr;
+  };
+
+  static const decode_entry root_entry;
+  static const decode_entry opcode_table[256];
+  static const decode_entry twobyte_opcode_table[256];
+  static const decode_entry groups_table[8][8];
+  
+  const decode_entry *current_decode_entry;
+  
+  void decode_wrapper();
+
   void* decode_op_immd();
   void* decode_op_simmd();
   void* decode_op_regA();
   void* decode_op_reg();
   void* decode_op_offset();
-   
+ 
   // Unary decoder
   void decode_I(); 
   void decode_r();
@@ -141,7 +161,7 @@ struct CPU {
  
   // Ternary decoder
   void decode_I_E2G(); // for imul, the imm must be accessed thru op_immd
- 
+
   // ---------- Executer ----------
   template <typename T>
   struct Executer {
@@ -156,8 +176,7 @@ struct CPU {
     Executer(CPU cpu) :
       cpu(cpu),
       dest(reinterpret_cast<T*&>(cpu.dest)),
-      src(reinterpret_cast<T*&>(cpu.src)) {}
-    
+      src(reinterpret_cast<T*&>(cpu.src)) {} 
 
     // ALU instructions
     void ADD();
@@ -222,7 +241,7 @@ struct CPU {
   
   Executer<uint32_t> exec32;
   Executer<uint16_t> exec16;
-  Executer<uint8_t> exec8;
+  Executer<uint8_t> exec8;  
 };
 
 #endif
