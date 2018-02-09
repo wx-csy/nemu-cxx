@@ -159,6 +159,16 @@ void CPU::decode_I2r() {
   src = decode_op_immd();
 }
 
+void CPU::decode_O2a() {
+  dest = decode_op_regA();
+  src = decode_op_offset();
+}
+
+void CPU::decode_a2O() {
+  dest = decode_op_offset();
+  src = decode_op_regA();
+}
+
 void CPU::decode_I() {
   dest = decode_op_immd();
 }
@@ -176,12 +186,24 @@ void CPU::decode_I_test() {
   src = decode_op_immd();
 }
 
+void CPU::decode_twobyte_escape() {
+  opcode = instr_fetch<uint8_t>();
+  current_decode_entry = &twobyte_opcode_table[opcode];
+}
+
 void CPU::decode_wrapper() {
+  operand_size = SIZE_32;
   opcode = instr_fetch<uint8_t>();
   current_decode_entry = &opcode_table[opcode];
   do {
-    if (current_decode_entry->decode_helper)
+    if (current_decode_entry->default_operand_size)
+      operand_size = current_decode_entry->default_operand_size;
+    if (current_decode_entry->decode_helper) {
       (this->*(current_decode_entry->decode_helper))();
+    } else {
+      // TODO: emit more hints
+      panic("Unexpected decode entry.");
+    }
   } while (!current_decode_entry->is_instr);
 }
 

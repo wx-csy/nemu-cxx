@@ -6,6 +6,8 @@
 #include "Memory.hpp"
 
 struct CPU {
+  static const vaddr_t ENTRY_START = 0x100000;
+
   Memory& memory;
   CPU(Memory& memory); 
 
@@ -158,9 +160,21 @@ struct CPU {
   void decode_I2a();
   void decode_I2E();
   void decode_I2r();
- 
+  void decode_O2a();
+  void decode_a2O(); 
+
   // Ternary decoder
   void decode_I_E2G(); // for imul, the imm must be accessed thru op_immd
+  
+  // Special
+  void decode_twobyte_escape();
+  
+  void decode_group1();
+  void decode_group2();
+  void decode_group3();
+  void decode_group4();
+  void decode_group5();
+  void decode_group7();
 
   // ---------- Executer ----------
   template <typename T>
@@ -218,6 +232,9 @@ struct CPU {
     void JCC();
     void CALL();
     void RET();
+    
+    // special instructions
+    void NEMU_TRAP();
 
   private:
     void update_ZFSFPF(T x);
@@ -242,6 +259,10 @@ struct CPU {
   Executer<uint32_t> exec32;
   Executer<uint16_t> exec16;
   Executer<uint8_t> exec8;  
+
+  // ---------- Controller ----------
+  void exec_wrapper();
+  void exec_n(uint32_t n);
 };
 
 #endif

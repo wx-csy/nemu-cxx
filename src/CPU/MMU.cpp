@@ -9,3 +9,7 @@ void* CPU::memory_access(vaddr_t addr, SIZE sz) {
   return memory.pmem + address_translate(addr);
 }
 
+void CPU::write_operand() {
+
+}
+

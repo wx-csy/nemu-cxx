@@ -4,5 +4,9 @@
 
 CPU::CPU(Memory& memory) :
   memory(memory), 
-  exec32(*this), exec16(*this), exec8(*this) {}
+  efl(0x00000002), eip(ENTRY_START),
+  exec32(*this), exec16(*this), exec8(*this)
+{
+  
+}
 
