@@ -191,19 +191,30 @@ void CPU::decode_twobyte_escape() {
   current_decode_entry = &twobyte_opcode_table[opcode];
 }
 
+void CPU::decode_prefix() {
+  opcode = instr_fetch<uint8_t>();
+  current_decode_entry = &opcode_table[opcode];
+}
+
+void CPU::decode_UD() {
+  panic("Undefined instruction (%x)", opcode);
+}
+
 void CPU::decode_wrapper() {
   operand_size = SIZE_32;
   opcode = instr_fetch<uint8_t>();
   current_decode_entry = &opcode_table[opcode];
+  bool flag;
   do {
+    flag = current_decode_entry->is_instr;
     if (current_decode_entry->default_operand_size)
       operand_size = current_decode_entry->default_operand_size;
     if (current_decode_entry->decode_helper) {
       (this->*(current_decode_entry->decode_helper))();
-    } else {
+//    } else {
       // TODO: emit more hints
-      panic("Unexpected decode entry.");
+//      panic("Unexpected decode entry.");
     }
-  } while (!current_decode_entry->is_instr);
+  } while (!flag);
 }
 

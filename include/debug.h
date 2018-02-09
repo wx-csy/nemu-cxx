@@ -34,3 +34,4 @@
 
 #endif
 
+#define __DEBUG__ fprintf(stderr, "%s, line = %d\n", __func__, __LINE__)

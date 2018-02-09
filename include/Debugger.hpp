@@ -23,6 +23,7 @@ struct Debugger {
 
   void cmd_help(std::istringstream& args);
   void cmd_q(std::istringstream& args);
+  void cmd_c(std::istringstream& args);
 
   static const std::map<std::string, cmd_entry> cmd_table;
 

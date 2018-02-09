@@ -6,12 +6,16 @@
 #include "Memory.hpp"
 
 const std::map<std::string, Debugger::cmd_entry> Debugger::cmd_table = {
-    {"help", {"Display help information", &Debugger::cmd_help}},
-    {"q", {"Exit NEMU", &Debugger::cmd_q}}, 
+  {"help", {"Display help information", &Debugger::cmd_help}},
+  {"q", {"Exit NEMU", &Debugger::cmd_q}}, 
+  {"c", {"Continue executing the program", &Debugger::cmd_c}},  
 };
 
 Debugger::Debugger(CPU& cpu, Memory& memory) : 
-  cpu(cpu), memory(memory) {}
+  cpu(cpu), memory(memory)
+{ 
+  load_default_image();  
+}
 
 static const uint8_t default_image [] = {
   0xb8, 0x34, 0x12, 0x00, 0x00,       // 100000: movl  $0x1234, %eax
@@ -48,6 +52,12 @@ void Debugger::cmd_help(std::istringstream& args) {
 
 void Debugger::cmd_q(std::istringstream& args) {
   std::exit(0);
+}
+
+void Debugger::cmd_c(std::istringstream& args) {
+  while (true) {
+    cpu.exec_wrapper();
+  }
 }
 
 void Debugger::mainloop() {

@@ -167,6 +167,8 @@ struct CPU {
   void decode_I_E2G(); // for imul, the imm must be accessed thru op_immd
   
   // Special
+  void decode_prefix();
+  void decode_UD();
   void decode_twobyte_escape();
   
   void decode_group1();
@@ -187,7 +189,7 @@ struct CPU {
     CPU& cpu;
     T *const &dest, *const &src;
 
-    Executer(CPU cpu) :
+    Executer(CPU& cpu) :
       cpu(cpu),
       dest(reinterpret_cast<T*&>(cpu.dest)),
       src(reinterpret_cast<T*&>(cpu.src)) {} 
@@ -262,7 +264,6 @@ struct CPU {
 
   // ---------- Controller ----------
   void exec_wrapper();
-  void exec_n(uint32_t n);
 };
 
 #endif

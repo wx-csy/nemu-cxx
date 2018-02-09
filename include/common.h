@@ -7,6 +7,8 @@
 #include <cstdint>
 #include <cstddef>
 #include <cstdio>
+#include <iostream>
+
 #include "debug.h"
 #include "log.h"
 

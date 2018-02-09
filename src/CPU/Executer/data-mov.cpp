@@ -1,6 +1,6 @@
 #include "common.h"
 #include "CPU.hpp"
-
+#include <iostream>
 template <typename T>
 void CPU::Executer<T>::MOV() {
   *dest = *src;

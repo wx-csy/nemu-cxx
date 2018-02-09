@@ -4,23 +4,30 @@
 #define PREF(decode_helper) \
   {&CPU::decode_##decode_helper, NULL, NULL, NULL, SIZE_NONE, false}
 
-#define EMPTY {NULL, NULL, NULL, NULL, SIZE_NONE, false}
+#define EMPTY {&CPU::decode_UD, NULL, NULL, NULL, SIZE_NONE, false}
 
-#define SZ(size) {NULL, NULL, NULL, NULL, size, false}
+#define SZ(size) {&CPU::decode_prefix, NULL, NULL, NULL, size, false}
 
 #define I(decode_helper, instr_name) \
   {&CPU::decode_##decode_helper, \
    &CPU::Executer<uint32_t>::instr_name, \
    &CPU::Executer<uint16_t>::instr_name, \
    &CPU::Executer<uint8_t>::instr_name, \
-   SIZE_NONE, false} 
+   SIZE_NONE, true} 
 
 #define IB(decode_helper, instr_name) \
   {&CPU::decode_##decode_helper, \
    &CPU::Executer<uint32_t>::instr_name, \
    &CPU::Executer<uint16_t>::instr_name, \
    &CPU::Executer<uint8_t>::instr_name, \
-   SIZE_8, false} 
+   SIZE_8, true} 
+
+#define IE(instr_name) \
+  {NULL, \
+   &CPU::Executer<uint32_t>::instr_name, \
+   &CPU::Executer<uint16_t>::instr_name, \
+   &CPU::Executer<uint8_t>::instr_name, \
+   SIZE_NONE, true} 
 
 
 const CPU::decode_entry CPU::opcode_table[256] = {
@@ -64,9 +71,9 @@ const CPU::decode_entry CPU::opcode_table[256] = {
   /* 0x78 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x7c */ EMPTY, EMPTY, EMPTY, EMPTY,
 
-  /* 0x80 */ IB(G2E, MOV), I(G2E, MOV), IB(E2G, MOV), I(E2G, MOV),
+  /* 0x80 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x84 */ EMPTY, EMPTY, EMPTY, EMPTY,
-  /* 0x88 */ EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0x88 */ IB(G2E, MOV), I(G2E, MOV), IB(E2G, MOV), I(E2G, MOV),
   /* 0x8c */ EMPTY, EMPTY, EMPTY, EMPTY,
 
   /* 0x90 */ EMPTY, EMPTY, EMPTY, EMPTY,
@@ -90,7 +97,7 @@ const CPU::decode_entry CPU::opcode_table[256] = {
   /* 0xcc */ EMPTY, EMPTY, EMPTY, EMPTY,
 
   /* 0xd0 */ EMPTY, EMPTY, EMPTY, EMPTY,
-  /* 0xd4 */ EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0xd4 */ EMPTY, EMPTY, IE(NEMU_TRAP), EMPTY,
   /* 0xd8 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0xdc */ EMPTY, EMPTY, EMPTY, EMPTY,
 
