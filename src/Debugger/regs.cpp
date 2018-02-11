@@ -12,3 +12,20 @@ std::map <std::string, uint16_t> regid = {
   {"eip", 0xff00}, {"efl", 0xff01},
 };
 
+std::pair<void*, SIZE> get_reg_info(CPU& cpu, uint16_t id) {
+  switch (id) {
+    case 0x0000 ... 0x0007:
+      return std::make_pair(cpu.get_reg_ptr(id, SIZE_32), SIZE_32);
+    case 0x0100 ... 0x0107:
+      return std::make_pair(cpu.get_reg_ptr(id - 0x0100, SIZE_16), SIZE_16);
+    case 0x0200 ... 0x0207:
+      return std::make_pair(cpu.get_reg_ptr(id - 0x0200, SIZE_8), SIZE_8);
+    case 0xff00:
+      return std::make_pair(&cpu.eip, SIZE_32);
+    case 0xff01:
+      return std::make_pair(&cpu.efl, SIZE_32);
+    default:
+      panic("Unexpected register id!");
+  }
+}
+

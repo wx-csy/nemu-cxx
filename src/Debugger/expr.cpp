@@ -5,7 +5,6 @@
 #include "Debugger/expr.h"
 #include "Debugger/regs.h"
 
-namespace Evaluator {
   struct Tokenizer {
     std::vector<token> tokens;
 
@@ -108,5 +107,3 @@ namespace Evaluator {
 //    for (auto tk : tokens.tokens) printf("%d\n", tk.token_type);
     return tokens.tokens;
   }
-};
-

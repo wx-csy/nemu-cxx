@@ -7,6 +7,7 @@
 #include "common.h"
 #include "Memory.hpp"
 #include "CPU.hpp"
+#include "Debugger/expr.h"
 
 struct Debugger {
   CPU& cpu;
@@ -27,6 +28,8 @@ struct Debugger {
   void cmd_p(std::istringstream& args);
 
   static const std::map<std::string, cmd_entry> cmd_table;
+  
+  expr build_expr(token_iter l, token_iter r);
 
   void mainloop();
 };

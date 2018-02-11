@@ -63,11 +63,11 @@ void Debugger::cmd_c(std::istringstream& args) {
 }
 
 void Debugger::cmd_p(std::istringstream& args) {
-  std::string expr;
-  getline(args, expr);
-  std::cout << expr << std::endl;
-  std::vector<Evaluator::token> tokens = Evaluator::tokenize(expr.c_str());
-  Evaluator::expr expression = Evaluator::build_expr(tokens.begin(), tokens.end());
+  std::string expstr;
+  getline(args, expstr);
+  std::cout << expstr << std::endl;
+  std::vector<token> tokens = tokenize(expstr.c_str());
+  expr expression = build_expr(tokens.begin(), tokens.end());
   std::cout << expression() << std::endl;
 }
 

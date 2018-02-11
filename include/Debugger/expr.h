@@ -1,9 +1,11 @@
+#ifndef __DEBUGGER_EXPR_H__
+#define __DEBUGGER_EXPR_H__
+
 #include <vector>
 #include <functional>
 #include "common.h"
 #include "Debugger/regs.h"
 
-namespace Evaluator {
   enum TOKEN_TYPE : uint16_t {
     TK_NUMBER = 0x0000, TK_REGISTER,
     TK_LEFT_PARENTHESIS = 0xff00, TK_RIGHT_PARENTHESIS,
@@ -30,6 +32,4 @@ namespace Evaluator {
   typedef std::function<uint32_t()> expr;
   typedef std::vector<token>::const_iterator token_iter;
 
-  expr build_expr(token_iter l, token_iter r);
-};
-
+#endif

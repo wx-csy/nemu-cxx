@@ -2,11 +2,10 @@
 #include <utility>
 #include <functional>
 #include "common.h"
+#include "Debugger.hpp"
 #include "Debugger/regs.h"
 #include "Debugger/expr.h"
 
-namespace Evaluator {
-  typedef std::function<uint32_t()> expr;
   typedef std::function<uint32_t(uint32_t)> unary_operator;
   typedef std::function<uint32_t(uint32_t, uint32_t)> binary_operator;
 
@@ -23,9 +22,11 @@ namespace Evaluator {
     uint32_t operator()() {return value;}
   };
 
+  template <typename T>
   struct expr_reg {
-    uint16_t regid;
-    uint32_t operator()() {return 0; /*TODO*/}    
+    T* reg_ptr;
+    expr_reg(void* ptr) : reg_ptr(static_cast<T*>(ptr)) {}
+    uint32_t operator()() {return *reg_ptr;}    
   };
   
   typedef std::vector<token>::const_iterator token_iter;
@@ -42,13 +43,21 @@ namespace Evaluator {
     return true;
   }
 
-  expr build_expr(token_iter l, token_iter r) {
+  expr Debugger::build_expr(token_iter l, token_iter r) {
 //  printf("dist = %ld\n", r - l);
     if (l >= r) throw std::runtime_error("Invalid expression! #1");
     else if (l == r - 1) {
       switch (l->token_type) {
         case TK_NUMBER: return expr_number({l->value.u32});
-        case TK_REGISTER: return expr_reg({l->value.regid});
+        case TK_REGISTER: { 
+          auto reg_info = get_reg_info(cpu, l->value.regid);
+          switch (reg_info.second) {
+            case SIZE_32: return expr_reg<uint32_t>(reg_info.first);
+            case SIZE_16: return expr_reg<uint16_t>(reg_info.first);
+            case SIZE_8:  return expr_reg<uint8_t> (reg_info.first);
+            default:      panic("Unexpected register size!");
+          }
+        }
         default: throw std::runtime_error("Invalid expression! #2");
       }
     } else if (check_parentheses(l, r)) return build_expr(l+1, r-1);
@@ -105,5 +114,4 @@ namespace Evaluator {
     }
     panic("Should not reach here!");
   }
-};
 
