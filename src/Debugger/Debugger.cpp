@@ -9,7 +9,8 @@
 const std::map<std::string, Debugger::cmd_entry> Debugger::cmd_table = {
   {"help", {"Display help information", &Debugger::cmd_help}},
   {"q", {"Exit NEMU", &Debugger::cmd_q}}, 
-  {"c", {"Continue executing the program", &Debugger::cmd_c}},  
+  {"c", {"Continue executing the program", &Debugger::cmd_c}},
+  {"si", {"Execute one or more instructions", &Debugger::cmd_si}}, 
   {"p", {"Evaluate and print expression", &Debugger::cmd_p}},
 };
 
@@ -60,6 +61,12 @@ void Debugger::cmd_c(std::istringstream& args) {
   while (true) {
     cpu.exec_wrapper();
   }
+}
+
+void Debugger::cmd_si(std::istringstream& args) {
+  uint64_t num_of_instrs;
+  if (!(args >> num_of_instrs)) num_of_instrs = 1;
+  while (num_of_instrs--) cpu.exec_wrapper();
 }
 
 void Debugger::cmd_p(std::istringstream& args) {
