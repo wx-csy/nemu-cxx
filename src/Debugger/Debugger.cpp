@@ -2,6 +2,7 @@
 #include <iostream>
 #include "common.h"
 #include "Debugger.hpp"
+#include "Debugger/expr.h"
 #include "CPU.hpp"
 #include "Memory.hpp"
 
@@ -9,6 +10,7 @@ const std::map<std::string, Debugger::cmd_entry> Debugger::cmd_table = {
   {"help", {"Display help information", &Debugger::cmd_help}},
   {"q", {"Exit NEMU", &Debugger::cmd_q}}, 
   {"c", {"Continue executing the program", &Debugger::cmd_c}},  
+  {"p", {"Evaluate and print expression", &Debugger::cmd_p}},
 };
 
 Debugger::Debugger(CPU& cpu, Memory& memory) : 
@@ -58,6 +60,15 @@ void Debugger::cmd_c(std::istringstream& args) {
   while (true) {
     cpu.exec_wrapper();
   }
+}
+
+void Debugger::cmd_p(std::istringstream& args) {
+  std::string expr;
+  getline(args, expr);
+  std::cout << expr << std::endl;
+  std::vector<Evaluator::token> tokens = Evaluator::tokenize(expr.c_str());
+  Evaluator::expr expression = Evaluator::build_expr(tokens.begin(), tokens.end());
+  std::cout << expression() << std::endl;
 }
 
 void Debugger::mainloop() {
