@@ -3,23 +3,23 @@
 
 template <typename T>
 void CPU::Executer<T>::JMP() {
-  cpu.eip = *dest;
+  cpu.fetcher.eip = *dest;
 }
 
 template <typename T>
 void CPU::Executer<T>::JCC() {
-  if (cpu.getcc(cpu.opcode & 0xf)) cpu.eip = *dest;
+  if (cpu.getcc(cpu.opcode & 0xf)) cpu.fetcher.eip = *dest;
 }
 
 template <typename T>
 void CPU::Executer<T>::CALL() {
-  push(cpu.eip);
-  cpu.eip = *dest;
+  push(cpu.fetcher.eip);
+  cpu.fetcher.eip = *dest;
 }
 
 template <typename T>
 void CPU::Executer<T>::RET() {
-  cpu.eip = pop();
+  cpu.fetcher.eip = pop();
 }
 
 template class CPU::Executer<uint8_t>;

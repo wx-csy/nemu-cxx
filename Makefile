@@ -9,10 +9,11 @@ BINARY ?= $(BUILD_DIR)/$(NAME)
 .DEFAULT_GOAL = app
 
 # Compilation flags
+CC = gcc
 CXX = g++
 LD = g++
 INCLUDES  = $(addprefix -I, $(INC_DIR))
-CFLAGS   += -std=c++11 -O2 -MMD -Wall -Werror -ggdb $(INCLUDES)
+CXXFLAGS += -std=c++11 -O2 -MMD -Wall -Werror -ggdb $(INCLUDES)
 
 # Files to be compiled
 SRCS = $(shell find src/ -name "*.cpp")
@@ -22,7 +23,7 @@ OBJS = $(SRCS:src/%.cpp=$(OBJ_DIR)/%.o)
 $(OBJ_DIR)/%.o: src/%.cpp
 	@echo + CXX $<
 	@mkdir -p $(dir $@)
-	@$(CXX) $(CFLAGS) -c -o $@ $<
+	@$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 # Depencies
 -include $(OBJS:.o=.d)

@@ -4,6 +4,8 @@
 #include <type_traits>
 #include "common.h"
 #include "Memory.hpp"
+#include "CPU/MMU.hpp"
+#include "CPU/Fetcher.hpp"
 
 struct CPU {
   static const vaddr_t ENTRY_START = 0x100000;
@@ -39,8 +41,6 @@ struct CPU {
     uint32_t efl;
   };
 
-  vaddr_t eip;
-
   void* get_reg_ptr(unsigned id, SIZE sz) {
     Assert(id >= 0 && id < 8, "Register id out of range!");
     switch (sz) {
@@ -71,47 +71,12 @@ struct CPU {
     if (subcode & 1) result = !result;
     return result;
   }
-
-  template <typename T>
-  T instr_fetch() {
-    T temp = vaddr_read<T>(eip);
-    eip += sizeof(T);
-    return temp;
-  }
-
-  uint32_t instr_vfetch(SIZE sz) {
-    switch (sz) {
-      case SIZE_8:  return instr_fetch<uint8_t>();
-      case SIZE_16: return instr_fetch<uint16_t>();
-      case SIZE_32: return instr_fetch<uint32_t>();
-      default:      panic("Unexpected operand size!");
-    }
-  }
-
-  uint32_t instr_vfetch_sext(SIZE sz) {
-    switch (sz) {
-      case SIZE_8:  return (int8_t)instr_fetch<uint8_t>();
-      case SIZE_16: return (int16_t)instr_fetch<uint16_t>();
-      case SIZE_32: return (int32_t)instr_fetch<uint32_t>();
-      default:      panic("Unexpected operand size!");
-    }
-  }
-
-  // ---------- Memory Management Unit ----------
-  paddr_t address_translate(vaddr_t);
   
-  template <typename T>
-  T vaddr_read(vaddr_t addr) {
-    return memory.paddr_read<T>(addr);
-  }
-
-  template <typename T>
-  void vaddr_write(vaddr_t addr, T data) {
-    memory.paddr_write<T>(addr, data);
-  }
-
-  void* memory_access(vaddr_t addr, SIZE sz);
-  void write_operand();
+  
+  // ---------- Memory Management Unit ----------
+  MMU mmu;
+  
+  Fetcher fetcher;
 
   // ---------- Decode Helpers ----------
   SIZE operand_size;
@@ -130,7 +95,6 @@ struct CPU {
     bool is_instr;
   };
 
-  static const decode_entry root_entry;
   static const decode_entry opcode_table[256];
   static const decode_entry twobyte_opcode_table[256];
   static const decode_entry groups_table[8][8];
@@ -248,11 +212,11 @@ struct CPU {
 
     void push(T x) {
       cpu.esp -= 4;
-      cpu.vaddr_write<uint32_t>(cpu.esp, x);
+      cpu.mmu.vaddr_write<uint32_t>(cpu.esp, x);
     }
 
     T pop() {
-      T temp = cpu.vaddr_read<uint32_t>(cpu.esp);
+      T temp = cpu.mmu.vaddr_read<uint32_t>(cpu.esp);
       cpu.esp += 4;
       return temp;
     }
@@ -263,6 +227,7 @@ struct CPU {
   Executer<uint8_t> exec8;  
 
   // ---------- Controller ----------
+  uint32_t eip_before_exec;
   void exec_wrapper();
 };
 

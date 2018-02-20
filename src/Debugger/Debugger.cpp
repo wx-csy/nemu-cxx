@@ -65,7 +65,13 @@ void Debugger::cmd_c(std::istringstream& args) {
 
 void Debugger::cmd_si(std::istringstream& args) {
   uint64_t num_of_instrs;
-  if (!(args >> num_of_instrs)) num_of_instrs = 1;
+  if (!(args >> num_of_instrs)) {
+    uint32_t last_eip = cpu.eip;
+    cpu.exec_wrapper();
+    for (uint32_t i = last_eip; i < cpu.eip_before_exec; i++)
+      printf("%02x ", cpu.vaddr_read<uint8_t>(i));
+    puts("");
+  } else
   while (num_of_instrs--) cpu.exec_wrapper();
 }
 

@@ -3,6 +3,7 @@
 
 void CPU::exec_wrapper() {
   decode_wrapper();
+  eip_before_exec = fetcher.eip;
   switch (operand_size) {
     case SIZE_8:
       Assert(current_decode_entry->exec8_helper, "Executer not found!");
@@ -20,6 +21,6 @@ void CPU::exec_wrapper() {
       // TODO: emit more hints
       panic("Unexpected operand size");
   }
-  write_operand();
+  mmu.write_operand();
 }
 
