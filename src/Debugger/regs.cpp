@@ -21,7 +21,7 @@ std::pair<void*, SIZE> get_reg_info(CPU& cpu, uint16_t id) {
     case 0x0200 ... 0x0207:
       return std::make_pair(cpu.get_reg_ptr(id - 0x0200, SIZE_8), SIZE_8);
     case 0xff00:
-      return std::make_pair(&cpu.eip, SIZE_32);
+      return std::make_pair(&cpu.fetcher.eip, SIZE_32);
     case 0xff01:
       return std::make_pair(&cpu.efl, SIZE_32);
     default:

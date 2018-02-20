@@ -6,6 +6,8 @@
 #include "Memory.hpp"
 #include "CPU/MMU.hpp"
 #include "CPU/Fetcher.hpp"
+#include "CPU/Decoder.hpp"
+#include "CPU/Executer.hpp"
 
 struct CPU {
   static const vaddr_t ENTRY_START = 0x100000;
@@ -77,151 +79,12 @@ struct CPU {
   MMU mmu;
   
   Fetcher fetcher;
-
-  // ---------- Decode Helpers ----------
-  SIZE operand_size;
-  void *src, *dest; 
-  uint32_t op_immd;
-  uint8_t opcode, opcode_ext;
-
-  template <typename T> struct Executer;
-
-  struct decode_entry {
-    void (CPU::*decode_helper)();
-    void (CPU::Executer<uint32_t>::*exec32_helper)();
-    void (CPU::Executer<uint16_t>::*exec16_helper)();
-    void (CPU::Executer<uint8_t>::*exec8_helper)();
-    SIZE default_operand_size;
-    bool is_instr;
-  };
-
-  static const decode_entry opcode_table[256];
-  static const decode_entry twobyte_opcode_table[256];
-  static const decode_entry groups_table[8][8];
   
-  const decode_entry *current_decode_entry;
-  
-  void decode_wrapper();
+  // ---------- Decoder ----------
 
-  void* decode_op_immd();
-  void* decode_op_simmd();
-  void* decode_op_regA();
-  void* decode_op_reg();
-  void* decode_op_offset();
- 
-  // Unary decoder
-  void decode_I(); 
-  void decode_r();
-  void decode_E();
-  void decode_I_test();
-
-  // Binary decoder
-  void decode_G2E();
-  void decode_E2G();
-  void decode_Eb2G();
-  void decode_Ew2G();
-  void decode_M2G_lea();
-  void decode_I2a();
-  void decode_I2E();
-  void decode_I2r();
-  void decode_O2a();
-  void decode_a2O(); 
-
-  // Ternary decoder
-  void decode_I_E2G(); // for imul, the imm must be accessed thru op_immd
-  
-  // Special
-  void decode_prefix();
-  void decode_UD();
-  void decode_twobyte_escape();
-  
-  void decode_group1();
-  void decode_group2();
-  void decode_group3();
-  void decode_group4();
-  void decode_group5();
-  void decode_group7();
+  Decoder decoder;
 
   // ---------- Executer ----------
-  template <typename T>
-  struct Executer {
-    static_assert(std::is_unsigned<T>::value,
-        "Template argument for `Executer' must be unsigned!");
-
-    typedef typename std::make_signed<T>::type ST;
-    
-    CPU& cpu;
-    T *const &dest, *const &src;
-
-    Executer(CPU& cpu) :
-      cpu(cpu),
-      dest(reinterpret_cast<T*&>(cpu.dest)),
-      src(reinterpret_cast<T*&>(cpu.src)) {} 
-
-    // ALU instructions
-    void ADD();
-    void ADC();
-    void SUB();
-    void SBB();
-    void CMP();
-    void INC();
-    void DEC();
-    void NEG();
-    void AND();
-    void OR();
-    void TEST();
-    void XOR();
-    void NOT();
-    void SHL();
-    void SHR();
-    void SAR();
-    void ROL();
-    void ROR();
-    void SETCC();
-
-    // data-mov instructions
-    void MOV();
-    void XCHG();
-    void PUSH();
-    void POP();
-    void LEAVE();
-    void CLTD(); // cwd(cwtd) and cdq(cltd)
-    void CWTL(); // cbw(cbtw) and cwde(cwtl)
-    void MOVSB(); // movsbw and movsbl
-    void MOVSW(); // movsww and movswl
-    void MOVZB(); // movzbw and movzbl
-    void MOVZW(); // movsbw and movsbl
-    void LEA();
-  
-    // control instructions
-    void JMP();
-    void JCC();
-    void CALL();
-    void RET();
-    
-    // special instructions
-    void NEMU_TRAP();
-
-  private:
-    void update_ZFSFPF(T x);
-    void clear_CFOF();
-    void add_set_CF(T a, T b, T* c);
-    void add_set_OF(T a, T b, T* c);
-    void sub_set_CF(T a, T b, T* c);
-    void sub_set_OF(T a, T b, T* c);
-
-    void push(T x) {
-      cpu.esp -= 4;
-      cpu.mmu.vaddr_write<uint32_t>(cpu.esp, x);
-    }
-
-    T pop() {
-      T temp = cpu.mmu.vaddr_read<uint32_t>(cpu.esp);
-      cpu.esp += 4;
-      return temp;
-    }
-  };
-  
   Executer<uint32_t> exec32;
   Executer<uint16_t> exec16;
   Executer<uint8_t> exec8;  

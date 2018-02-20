@@ -33,6 +33,7 @@ static const uint8_t default_image [] = {
 };
 
 void Debugger::load_default_image() {
+  printf("Default image successfully loaded!\n");
   memcpy(&memory.pmem[CPU::ENTRY_START], default_image, 
       sizeof(default_image));
 }
@@ -66,10 +67,10 @@ void Debugger::cmd_c(std::istringstream& args) {
 void Debugger::cmd_si(std::istringstream& args) {
   uint64_t num_of_instrs;
   if (!(args >> num_of_instrs)) {
-    uint32_t last_eip = cpu.eip;
+    uint32_t last_eip = cpu.fetcher.eip;
     cpu.exec_wrapper();
     for (uint32_t i = last_eip; i < cpu.eip_before_exec; i++)
-      printf("%02x ", cpu.vaddr_read<uint8_t>(i));
+      printf("%02x ", cpu.mmu.vaddr_read<uint8_t>(i));
     puts("");
   } else
   while (num_of_instrs--) cpu.exec_wrapper();

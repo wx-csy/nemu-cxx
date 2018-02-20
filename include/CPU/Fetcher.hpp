@@ -17,11 +17,20 @@ struct Fetcher {
     return temp;
   }
 
-  uint32_t fetch(SIZE sz) {
+  uint32_t fetch_u(SIZE sz) {
     switch (sz) {
       case SIZE_8:  return fetch<uint8_t>();
       case SIZE_16: return fetch<uint16_t>();
       case SIZE_32: return fetch<uint32_t>();
+      default:      panic("Unexpected opreand size!");
+    }
+  }
+
+  uint32_t fetch_s(SIZE sz) {
+    switch (sz) {
+      case SIZE_8:  return (int8_t)fetch<uint8_t>();
+      case SIZE_16: return (int16_t)fetch<uint16_t>();
+      case SIZE_32: return (int32_t)fetch<uint32_t>();
       default:      panic("Unexpected opreand size!");
     }
   }

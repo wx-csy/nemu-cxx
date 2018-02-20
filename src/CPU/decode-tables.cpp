@@ -2,35 +2,35 @@
 #include "CPU.hpp"
 
 #define PREF(decode_helper) \
-  {&CPU::decode_##decode_helper, NULL, NULL, NULL, SIZE_NONE, false}
+  {&Decoder::decode_##decode_helper, NULL, NULL, NULL, SIZE_NONE, false}
 
-#define EMPTY {&CPU::decode_UD, NULL, NULL, NULL, SIZE_NONE, false}
+#define EMPTY {&Decoder::decode_UD, NULL, NULL, NULL, SIZE_NONE, false}
 
-#define SZ(size) {&CPU::decode_prefix, NULL, NULL, NULL, size, false}
+#define SZ(size) {&Decoder::decode_prefix, NULL, NULL, NULL, size, false}
 
 #define I(decode_helper, instr_name) \
-  {&CPU::decode_##decode_helper, \
-   &CPU::Executer<uint32_t>::instr_name, \
-   &CPU::Executer<uint16_t>::instr_name, \
-   &CPU::Executer<uint8_t>::instr_name, \
+  {&Decoder::decode_##decode_helper, \
+   &Executer<uint32_t>::instr_name, \
+   &Executer<uint16_t>::instr_name, \
+   &Executer<uint8_t>::instr_name, \
    SIZE_NONE, true} 
 
 #define IB(decode_helper, instr_name) \
-  {&CPU::decode_##decode_helper, \
-   &CPU::Executer<uint32_t>::instr_name, \
-   &CPU::Executer<uint16_t>::instr_name, \
-   &CPU::Executer<uint8_t>::instr_name, \
+  {&Decoder::decode_##decode_helper, \
+   &Executer<uint32_t>::instr_name, \
+   &Executer<uint16_t>::instr_name, \
+   &Executer<uint8_t>::instr_name, \
    SIZE_8, true} 
 
 #define IE(instr_name) \
   {NULL, \
-   &CPU::Executer<uint32_t>::instr_name, \
-   &CPU::Executer<uint16_t>::instr_name, \
-   &CPU::Executer<uint8_t>::instr_name, \
+   &Executer<uint32_t>::instr_name, \
+   &Executer<uint16_t>::instr_name, \
+   &Executer<uint8_t>::instr_name, \
    SIZE_NONE, true} 
 
 
-const CPU::decode_entry CPU::opcode_table[256] = {
+const Decoder::decode_entry Decoder::opcode_table[256] = {
   /* 0x00 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x04 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x08 */ EMPTY, EMPTY, EMPTY, EMPTY,
@@ -112,7 +112,7 @@ const CPU::decode_entry CPU::opcode_table[256] = {
   /* 0xfc */ EMPTY, EMPTY, EMPTY, EMPTY,
 };
 
-const CPU::decode_entry CPU::twobyte_opcode_table[256] = {
+const Decoder::decode_entry Decoder::twobyte_opcode_table[256] = {
   /* 0x00 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x04 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x08 */ EMPTY, EMPTY, EMPTY, EMPTY,
@@ -194,7 +194,7 @@ const CPU::decode_entry CPU::twobyte_opcode_table[256] = {
   /* 0xfc */ EMPTY, EMPTY, EMPTY, EMPTY,
 };
 
-const CPU::decode_entry CPU::groups_table[8][8] = {
+const Decoder::decode_entry Decoder::groups_table[8][8] = {
 { // GROUP 0
   /* 0x00 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x04 */ EMPTY, EMPTY, EMPTY, EMPTY,
