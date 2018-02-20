@@ -15,6 +15,7 @@ struct Debugger {
 
   Debugger(CPU& cpu, Memory& memory);
 
+  void load_image(const char* path);
   void load_default_image();
    
   struct cmd_entry {

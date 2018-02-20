@@ -52,7 +52,8 @@ expr Debugger::build_expr(token_iter l, token_iter r) {
     for (auto it = l; it < r; it++) {
       if (it->token_type == TK_LEFT_PARENTHESIS) depth++;
       else if (it->token_type == TK_RIGHT_PARENTHESIS) depth--;
-      else if (depth == 0 && it->precedence() >= precedence) {
+      else if (depth == 0 && (it->precedence() > precedence ||
+            (it->precedence() == precedence && it->assoc_l2r()))) {
         precedence = it->precedence();
         cur = it;
       }

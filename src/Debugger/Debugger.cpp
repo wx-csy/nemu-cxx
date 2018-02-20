@@ -17,7 +17,6 @@ const std::map<std::string, Debugger::cmd_entry> Debugger::cmd_table = {
 Debugger::Debugger(CPU& cpu, Memory& memory) : 
   cpu(cpu), memory(memory)
 { 
-  load_default_image();  
 }
 
 static const uint8_t default_image [] = {
@@ -32,11 +31,27 @@ static const uint8_t default_image [] = {
   0xd6,                               // 100026: nemu_trap
 };
 
+void Debugger::load_image(const char* path) {
+  if (path == NULL) load_default_image();
+  else {
+    FILE *fp = fopen(path, "rb");
+    Assert(fp, "Can not open image `%s'", path);
+    Log("Image `%s' successfully loaded!", path);
+    fseek(fp, 0, SEEK_END);
+    uint32_t size = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    int ret = fread(&memory.pmem[CPU::ENTRY_START], size, 1, fp);
+    assert(ret == 1);
+    fclose(fp);
+  }
+}
+
 void Debugger::load_default_image() {
-  printf("Default image successfully loaded!\n");
+  Log("Default image successfully loaded!");
   memcpy(&memory.pmem[CPU::ENTRY_START], default_image, 
       sizeof(default_image));
 }
+
 
 void Debugger::cmd_help(std::istringstream& args) {
   std::string arg;
@@ -88,19 +103,23 @@ void Debugger::cmd_p(std::istringstream& args) {
 
 void Debugger::mainloop() {
   while (true) {
-    std::cout << "(nemu) ";
-    std::string str, cmd;
-    std::getline(std::cin, str);
-    std::istringstream args(str);
-    if (args >> cmd) {
-      auto entry = cmd_table.find(cmd);
-      if (entry == cmd_table.end()) {
-        printf("Unknown command '%s'\n", cmd.c_str());
+    try {
+      std::cout << "(nemu) ";
+      std::string str, cmd;
+      std::getline(std::cin, str);
+      std::istringstream args(str);
+      if (args >> cmd) {
+        auto entry = cmd_table.find(cmd);
+        if (entry == cmd_table.end()) {
+          printf("Unknown command '%s'\n", cmd.c_str());
+        } else {
+          (this->*entry->second.handler)(args);
+        }
       } else {
-        (this->*entry->second.handler)(args);
+        continue;
       }
-    } else {
-      continue;
+    } catch (std::exception& ex) {
+      printf("Exception caught: %s\n", ex.what());
     }
   }
 }

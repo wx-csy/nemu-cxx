@@ -41,9 +41,9 @@
     
     bool is_unary() {
       return tokens.empty() || 
-        (tokens.rbegin()->token_type != TK_NUMBER &&
-         tokens.rbegin()->token_type != TK_REGISTER &&
-         tokens.rbegin()->token_type != TK_RIGHT_PARENTHESIS);
+        (tokens.back().token_type != TK_NUMBER &&
+         tokens.back().token_type != TK_REGISTER &&
+         tokens.back().token_type != TK_RIGHT_PARENTHESIS);
     }   
 
     void get_number(const char *pattern) {
