@@ -65,8 +65,11 @@ expr Debugger::build_expr(token_iter l, token_iter r) {
       case TK_UNARY_MINUS: 
         rhs = build_expr(cur+1, r);
         return [=] {return -rhs();}; 
-      case TK_DEREFERENCE:
-        panic("unimplemented!");
+      case TK_DEREFERENCE: {
+        MMU& mmu = cpu.mmu;
+        rhs = build_expr(cur+1, r);
+        return [&mmu, rhs] {return mmu.vaddr_read<uint32_t>(rhs());};  
+      }
       case TK_NOT: 
         rhs = build_expr(cur+1, r);
         return [=] {return !rhs();};

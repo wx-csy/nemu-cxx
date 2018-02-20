@@ -79,10 +79,11 @@ void Debugger::cmd_si(std::istringstream& args) {
 void Debugger::cmd_p(std::istringstream& args) {
   std::string expstr;
   getline(args, expstr);
-  std::cout << expstr << std::endl;
   std::vector<token> tokens = tokenize(expstr.c_str());
   expr expression = build_expr(tokens.begin(), tokens.end());
-  std::cout << expression() << std::endl;
+  uint32_t value = expression();
+  printf("  DEC:%d\tHEX: 0x%08x\n", value, value);
+  // std::cout << expression() << std::endl;
 }
 
 void Debugger::mainloop() {
