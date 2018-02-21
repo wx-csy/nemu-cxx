@@ -2,6 +2,7 @@
 #define __DEBUGGER_HPP__
 
 #include <map>
+#include <set>
 #include <sstream>
 #include <string>
 #include "common.h"
@@ -28,11 +29,15 @@ struct Debugger {
   void cmd_c(std::istringstream& args);
   void cmd_si(std::istringstream& args);
   void cmd_p(std::istringstream& args);
+  void cmd_b(std::istringstream& args);
 
   static const std::map<std::string, cmd_entry> cmd_table;
-  
+   
   expr build_expr(token_iter l, token_iter r);
 
+  std::set<uint32_t> breakpoints;
+
+  void exec_wrapper();
   void mainloop();
 };
 

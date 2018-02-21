@@ -153,7 +153,7 @@ void Executer<T>::ROR() {
 }
 
 template <typename T>
-void Executer<T>::SETCC() {
+void Executer<T>::SETcc() {
   *dest = cpu.getcc(cpu.decoder.opcode & 0xf);
 }
 

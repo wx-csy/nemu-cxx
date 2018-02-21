@@ -37,7 +37,7 @@ struct Executer {
   void SAR();
   void ROL();
   void ROR();
-  void SETCC();
+  void SETcc();
 
   // data-mov instructions
   void MOV();
@@ -55,12 +55,14 @@ struct Executer {
   
   // control instructions
   void JMP();
-  void JCC();
+  void Jcc();
   void CALL();
   void RET();
   
   // special instructions
   void NEMU_TRAP();
+  void IN();
+  void OUT();
 
 private:
   void update_ZFSFPF(T x);

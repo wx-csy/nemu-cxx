@@ -12,6 +12,7 @@ const std::map<std::string, Debugger::cmd_entry> Debugger::cmd_table = {
   {"c", {"Continue executing the program", &Debugger::cmd_c}},
   {"si", {"Execute one or more instructions", &Debugger::cmd_si}}, 
   {"p", {"Evaluate and print expression", &Debugger::cmd_p}},
+  {"b", {"Add breakpoint", &Debugger::cmd_b}},
 };
 
 Debugger::Debugger(CPU& cpu, Memory& memory) : 
@@ -75,20 +76,16 @@ void Debugger::cmd_q(std::istringstream& args) {
 
 void Debugger::cmd_c(std::istringstream& args) {
   while (true) {
-    cpu.exec_wrapper();
+    exec_wrapper();
   }
 }
 
 void Debugger::cmd_si(std::istringstream& args) {
   uint64_t num_of_instrs;
   if (!(args >> num_of_instrs)) {
-    uint32_t last_eip = cpu.fetcher.eip;
-    cpu.exec_wrapper();
-    for (uint32_t i = last_eip; i < cpu.eip_before_exec; i++)
-      printf("%02x ", cpu.mmu.vaddr_read<uint8_t>(i));
-    puts("");
-  } else
-  while (num_of_instrs--) cpu.exec_wrapper();
+    exec_wrapper();
+ } else
+  while (num_of_instrs--) exec_wrapper();
 }
 
 void Debugger::cmd_p(std::istringstream& args) {
@@ -100,6 +97,23 @@ void Debugger::cmd_p(std::istringstream& args) {
   printf("  DEC:%d\tHEX: 0x%08x\n", value, value);
   // std::cout << expression() << std::endl;
 }
+
+void Debugger::cmd_b(std::istringstream& args) {
+  std::string expstr;
+  getline(args, expstr);
+  std::vector<token> tokens = tokenize(expstr.c_str());
+  expr expression = build_expr(tokens.begin(), tokens.end());
+  uint32_t value = expression();
+  breakpoints.insert(value);
+  printf("  Breakpoint 0x%08x successfully added!\n", value);
+}
+
+void Debugger::exec_wrapper() {
+  cpu.exec_wrapper();
+
+  if (breakpoints.find(cpu.fetcher.eip) != breakpoints.end())
+    throw std::runtime_error("Breakpoint triggered!");
+};
 
 void Debugger::mainloop() {
   while (true) {

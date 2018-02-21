@@ -3,18 +3,19 @@
 
 template <typename T>
 void Executer<T>::JMP() {
-  cpu.fetcher.eip = *dest;
+  cpu.fetcher.eip = *reinterpret_cast<uint32_t*>(dest);
 }
 
 template <typename T>
-void Executer<T>::JCC() {
-  if (cpu.getcc(cpu.decoder.opcode & 0xf)) cpu.fetcher.eip = *dest;
+void Executer<T>::Jcc() {
+  if (cpu.getcc(cpu.decoder.opcode & 0xf)) 
+    cpu.fetcher.eip = *reinterpret_cast<uint32_t*>(dest);
 }
 
 template <typename T>
 void Executer<T>::CALL() {
   push(cpu.fetcher.eip);
-  cpu.fetcher.eip = *dest;
+  cpu.fetcher.eip = *reinterpret_cast<uint32_t*>(dest);
 }
 
 template <typename T>

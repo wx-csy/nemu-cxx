@@ -16,7 +16,7 @@ struct Decoder {
   SIZE operand_size;
   void *src, *dest; 
   uint32_t op_immd;
-  uint8_t opcode, opcode_ext;
+  uint8_t opcode;
   
   Decoder(CPU& cpu);
   Decoder(CPU& cpu, Fetcher& fetcher);
@@ -51,17 +51,18 @@ struct Decoder {
   
   void decode_wrapper();
 
-  void* decode_op_immd();
-  void* decode_op_simmd();
-  void* decode_op_regA();
-  void* decode_op_reg();
-  void* decode_op_offset();
+  void* decode_op_I();
+  void* decode_op_SI();
+  void* decode_op_a();
+  void* decode_op_r();
+  void* decode_op_O();
  
   // Unary decoder
   void decode_I(); 
   void decode_r();
   void decode_E();
   void decode_I_test();
+  void decode_J();
 
   // Binary decoder
   void decode_G2E();
@@ -71,6 +72,7 @@ struct Decoder {
   void decode_M2G_lea();
   void decode_I2a();
   void decode_I2E();
+  void decode_SI2E();
   void decode_I2r();
   void decode_O2a();
   void decode_a2O(); 
@@ -83,11 +85,12 @@ struct Decoder {
   void decode_UD();
   void decode_twobyte_escape();
   
-  void decode_group1();
+  void decode_I2E_gp1();
+  void decode_SI2E_gp1();
   void decode_group2();
   void decode_group3();
   void decode_group4();
-  void decode_group5();
+  void decode_E_gp5();
   void decode_group7();
   
 };

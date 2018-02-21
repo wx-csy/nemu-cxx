@@ -71,25 +71,25 @@ void* Decoder::ModRM_get_rm_ptr(SIZE sz) {
   }
 }
 
-inline void* Decoder::decode_op_immd() {
+inline void* Decoder::decode_op_I() {
   op_immd = fetcher.fetch_u(operand_size);
   return &op_immd;
 }
 
-inline void* Decoder::decode_op_simmd() {
-  op_immd = fetcher.fetch_s(operand_size);
+inline void* Decoder::decode_op_SI() {
+  op_immd = (int8_t)fetcher.fetch<uint8_t>();
   return &op_immd;
 }
 
-inline void* Decoder::decode_op_regA() {
+inline void* Decoder::decode_op_a() {
   return &cpu.eax;
 }
 
-inline void* Decoder::decode_op_reg() {
+inline void* Decoder::decode_op_r() {
   return cpu.get_reg_ptr(opcode & 0x7, operand_size);
 }
 
-inline void* Decoder::decode_op_offset() {
+inline void* Decoder::decode_op_O() {
   uint32_t addr = fetcher.fetch_s(operand_size);
   return cpu.mmu.memory_access(addr, operand_size);
 }
@@ -131,42 +131,48 @@ void Decoder::decode_M2G_lea() {
 }
 
 void Decoder::decode_I2a() {
-  dest = decode_op_regA();
-  src = decode_op_immd();
+  dest = decode_op_a();
+  src = decode_op_I();
 }
 
 void Decoder::decode_I_E2G() {
   decode_E2G();
-  decode_op_immd();
+  decode_op_I();
 }
 
 void Decoder::decode_I2E() {
   ModRM_decode();
   dest = ModRM_get_rm_ptr();
-  src = decode_op_immd();
+  src = decode_op_I();
+}
+
+void Decoder::decode_SI2E() {
+  ModRM_decode();
+  dest = ModRM_get_rm_ptr();
+  src = decode_op_SI();
 }
 
 void Decoder::decode_I2r() {
-  dest = decode_op_reg();
-  src = decode_op_immd();
+  dest = decode_op_r();
+  src = decode_op_I();
 }
 
 void Decoder::decode_O2a() {
-  dest = decode_op_regA();
-  src = decode_op_offset();
+  dest = decode_op_a();
+  src = decode_op_O();
 }
 
 void Decoder::decode_a2O() {
-  dest = decode_op_offset();
-  src = decode_op_regA();
+  dest = decode_op_O();
+  src = decode_op_a();
 }
 
 void Decoder::decode_I() {
-  dest = decode_op_immd();
+  dest = decode_op_I();
 }
 
 void Decoder::decode_r() {
-  dest = decode_op_reg();
+  dest = decode_op_r();
 }
 
 void Decoder::decode_E() {
@@ -174,8 +180,14 @@ void Decoder::decode_E() {
   dest = ModRM_get_rm_ptr();
 }
 
+void Decoder::decode_J() {
+  op_immd = fetcher.fetch_s(operand_size);
+  op_immd += fetcher.eip;
+  dest = &op_immd;
+}
+
 void Decoder::decode_I_test() {
-  src = decode_op_immd();
+  src = decode_op_I();
 }
 
 void Decoder::decode_twobyte_escape() {
@@ -189,7 +201,22 @@ void Decoder::decode_prefix() {
 }
 
 void Decoder::decode_UD() {
-  panic("Undefined instruction (%x)", opcode);
+  panic("Undefined instruction (%02x), eip = %08x", opcode, fetcher.eip - 1);
+}
+
+void Decoder::decode_I2E_gp1() {
+  decode_I2E();
+  current_decode_entry = &groups_table[1][ModRM.reg_op];
+}
+
+void Decoder::decode_SI2E_gp1() {
+  decode_SI2E();
+  current_decode_entry = &groups_table[1][ModRM.reg_op];
+}
+
+void Decoder::decode_E_gp5() {
+  decode_E();
+  current_decode_entry = &groups_table[5][ModRM.reg_op];
 }
 
 void Decoder::decode_wrapper() {
