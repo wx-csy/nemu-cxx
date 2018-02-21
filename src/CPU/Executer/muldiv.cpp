@@ -79,6 +79,72 @@ void Executer<T>::IMUL3() {
   imul_set_CFOF(cpu.decoder.op_immd, *src, dest);
 }
 
+template <>
+void Executer<uint8_t>::DIV() {
+  uint8_t rem = cpu.ax % *dest;
+  cpu.al = cpu.ax / *dest;
+  cpu.ah = rem;
+}
+
+template <>
+void Executer<uint16_t>::DIV() {
+  union {
+    struct {uint16_t low, high;};
+    uint32_t value;
+  } dividend;
+  dividend.low = cpu.ax;
+  dividend.high = cpu.dx;
+  uint16_t rem = dividend.value % *dest;
+  cpu.ax = dividend.value / *dest;
+  cpu.dx = rem;
+}
+
+template <>
+void Executer<uint32_t>::DIV() {
+  union {
+    struct {uint32_t low, high;};
+    uint64_t value;
+  } dividend;
+  dividend.low = cpu.eax;
+  dividend.high = cpu.edx;
+  uint32_t rem = dividend.value % *dest;
+  cpu.eax = dividend.value / *dest;
+  cpu.edx = rem;
+}
+
+template <>
+void Executer<uint8_t>::IDIV() {
+  int8_t rem = (int16_t)cpu.ax % (int8_t)*dest;
+  cpu.al = (int16_t)cpu.ax / (int8_t)*dest;
+  cpu.ah = rem;
+}
+
+template <>
+void Executer<uint16_t>::IDIV() {
+  union {
+    struct {uint16_t low, high;};
+    int32_t value;
+  } dividend;
+  dividend.low = cpu.ax;
+  dividend.high = cpu.dx;
+  int16_t rem = dividend.value % (int16_t)*dest;
+  cpu.ax = dividend.value / (int16_t)*dest;
+  cpu.dx = rem;
+}
+
+template <>
+void Executer<uint32_t>::IDIV() {
+  union {
+    struct {uint32_t low, high;};
+    int64_t value;
+  } dividend;
+  dividend.low = cpu.eax;
+  dividend.high = cpu.edx;
+  int32_t rem = dividend.value % (int32_t)*dest;
+  cpu.eax = dividend.value / (int32_t)*dest;
+  cpu.edx = rem;
+}
+
 template class Executer<uint8_t>;
 template class Executer<uint16_t>;
 template class Executer<uint32_t>;

@@ -88,8 +88,10 @@ struct Decoder {
   void decode_I2E_gp1();
   void decode_Ib2E_gp1();
   void decode_Ib2E_gp2();
+  void decode_one2E_gp2();
+  void decode_cl2E_gp2();
   void decode_E_gp3();
-  void decode_group4();
+  void decode_E_gp4();
   void decode_E_gp5();
   void decode_group7();
   

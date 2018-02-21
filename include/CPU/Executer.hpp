@@ -44,6 +44,8 @@ struct Executer {
   void IMUL1();
   void IMUL2();
   void IMUL3();
+  void DIV();
+  void IDIV();
 
   // data-mov instructions
   void MOV();

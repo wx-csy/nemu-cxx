@@ -221,9 +221,27 @@ void Decoder::decode_Ib2E_gp2() {
   current_decode_entry = &groups_table[2][ModRM.reg_op];
 }
 
+void Decoder::decode_one2E_gp2() {
+  decode_E();
+  op_immd = 1;
+  src = &op_immd;
+  current_decode_entry = &groups_table[2][ModRM.reg_op];
+}
+
+void Decoder::decode_cl2E_gp2() {
+  decode_E();
+  src = &cpu.cl;
+  current_decode_entry = &groups_table[2][ModRM.reg_op];
+}
+
 void Decoder::decode_E_gp3() {
   decode_E();
   current_decode_entry = &groups_table[3][ModRM.reg_op];
+}
+
+void Decoder::decode_E_gp4() {
+  decode_E();
+  current_decode_entry = &groups_table[4][ModRM.reg_op];
 }
 
 void Decoder::decode_E_gp5() {
