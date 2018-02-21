@@ -72,7 +72,7 @@ void* Decoder::ModRM_get_rm_ptr(SIZE sz) {
 }
 
 inline void* Decoder::decode_op_I() {
-  op_immd = fetcher.fetch_u(operand_size);
+  op_immd = fetcher.fetch_s(operand_size);
   return &op_immd;
 }
 
@@ -214,6 +214,12 @@ void Decoder::decode_SI2E_gp1() {
   current_decode_entry = &groups_table[1][ModRM.reg_op];
 }
 
+void Decoder::decode_Ib2E_gp2() {
+  op_immd = fetcher.fetch<uint8_t>();
+  decode_E();
+  current_decode_entry = &groups_table[2][ModRM.reg_op];
+}
+
 void Decoder::decode_E_gp5() {
   decode_E();
   current_decode_entry = &groups_table[5][ModRM.reg_op];
@@ -226,13 +232,10 @@ void Decoder::decode_wrapper() {
   bool flag;
   do {
     flag = current_decode_entry->is_instr;
-    if (current_decode_entry->default_operand_size)
+    if (current_decode_entry->default_operand_size != SIZE_NONE)
       operand_size = current_decode_entry->default_operand_size;
     if (current_decode_entry->decode_helper) {
       (this->*(current_decode_entry->decode_helper))();
-//    } else {
-      // TODO: emit more hints
-//      panic("Unexpected decode entry.");
     }
   } while (!flag);
 }

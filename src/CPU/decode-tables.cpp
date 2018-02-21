@@ -55,13 +55,13 @@ const Decoder::decode_entry Decoder::opcode_table[256] = {
 
   /* 0x30 */ IB(G2E, XOR), I(G2E, XOR), IB(E2G, XOR), I(E2G, XOR),
   /* 0x34 */ EMPTY, EMPTY, EMPTY, EMPTY,
-  /* 0x38 */ EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0x38 */ IB(G2E, CMP), I(G2E, CMP), IB(E2G, CMP), I(E2G, CMP),
   /* 0x3c */ EMPTY, EMPTY, EMPTY, EMPTY,
 
-  /* 0x40 */ EMPTY, EMPTY, EMPTY, EMPTY,
-  /* 0x44 */ EMPTY, EMPTY, EMPTY, EMPTY,
-  /* 0x48 */ EMPTY, EMPTY, EMPTY, EMPTY,
-  /* 0x4c */ EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0x40 */ I(r, INC), I(r, INC), I(r, INC), I(r, INC),
+  /* 0x44 */ I(r, INC), I(r, INC), I(r, INC), I(r, INC), 
+  /* 0x48 */ I(r, DEC), I(r, DEC), I(r, DEC), I(r, DEC), 
+  /* 0x4c */ I(r, DEC), I(r, DEC), I(r, DEC), I(r, DEC), 
 
   /* 0x50 */ I(r, PUSH), I(r, PUSH), I(r, PUSH), I(r, PUSH),
   /* 0x54 */ I(r, PUSH), I(r, PUSH), I(r, PUSH), I(r, PUSH),
@@ -70,7 +70,7 @@ const Decoder::decode_entry Decoder::opcode_table[256] = {
 
   /* 0x60 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x64 */ EMPTY, EMPTY, SZ(SIZE_16), EMPTY,
-  /* 0x68 */ EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0x68 */ I(I, PUSH), EMPTY, IB(I, PUSH), EMPTY,
   /* 0x6c */ EMPTY, EMPTY, EMPTY, EMPTY,
 
   /* 0x70 */ IB(J, Jcc), IB(J, Jcc), IB(J, Jcc), IB(J, Jcc),
@@ -83,7 +83,7 @@ const Decoder::decode_entry Decoder::opcode_table[256] = {
   /* 0x88 */ IB(G2E, MOV), I(G2E, MOV), IB(E2G, MOV), I(E2G, MOV),
   /* 0x8c */ EMPTY, I(M2G_lea, LEA), EMPTY, EMPTY,
 
-  /* 0x90 */ EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0x90 */ IE(NOP), EMPTY, EMPTY, EMPTY,
   /* 0x94 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x98 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x9c */ EMPTY, EMPTY, EMPTY, EMPTY,
@@ -98,7 +98,7 @@ const Decoder::decode_entry Decoder::opcode_table[256] = {
   /* 0xb8 */ I(I2r, MOV), I(I2r, MOV), I(I2r, MOV), I(I2r, MOV),
   /* 0xbc */ I(I2r, MOV), I(I2r, MOV), I(I2r, MOV), I(I2r, MOV),
 
-  /* 0xc0 */ EMPTY, EMPTY, EMPTY, IE(RET),
+  /* 0xc0 */ GB(Ib2E_gp2), G(Ib2E_gp2), EMPTY, IE(RET),
   /* 0xc4 */ EMPTY, EMPTY, IB(I2E, MOV), I(I2E, MOV),
   /* 0xc8 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0xcc */ EMPTY, EMPTY, EMPTY, EMPTY,
@@ -211,8 +211,8 @@ const Decoder::decode_entry Decoder::groups_table[8][8] = {
   /* 0x14 */ IE(AND), IE(SUB), IE(XOR), IE(CMP),
 },
 { // GROUP 2
-  /* 0x20 */ EMPTY, EMPTY, EMPTY, EMPTY,
-  /* 0x24 */ EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0x20 */ IE(ROL), IE(ROR), EMPTY, EMPTY,
+  /* 0x24 */ IE(SHL), IE(SHR), EMPTY, IE(SAR),
 },
 { // GROUP 3
   /* 0x30 */ EMPTY, EMPTY, EMPTY, EMPTY,

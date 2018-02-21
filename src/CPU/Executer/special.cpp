@@ -10,6 +10,11 @@ void Executer<T>::NEMU_TRAP() {
   std::exit(0);
 }
 
+template <typename T>
+void Executer<T>::NOP() {
+
+}
+
 // TODO: finish IN and OUT
 template <typename T>
 void Executer<T>::IN() {

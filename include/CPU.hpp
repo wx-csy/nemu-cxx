@@ -46,7 +46,7 @@ struct CPU {
   void* get_reg_ptr(unsigned id, SIZE sz) {
     Assert(id >= 0 && id < 8, "Register id out of range!");
     switch (sz) {
-      case SIZE_8:  return &gpr[id >> 1]._8[id & 1];
+      case SIZE_8:  return &gpr[id & 0x3]._8[id >> 2];
       case SIZE_16: return &gpr[id]._16;
       case SIZE_32: return &gpr[id]._32;
       default:      panic("Unexpected register size!");

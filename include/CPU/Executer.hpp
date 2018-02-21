@@ -61,6 +61,7 @@ struct Executer {
   
   // special instructions
   void NEMU_TRAP();
+  void NOP();
   void IN();
   void OUT();
 

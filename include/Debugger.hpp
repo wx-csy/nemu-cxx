@@ -30,6 +30,7 @@ struct Debugger {
   void cmd_si(std::istringstream& args);
   void cmd_p(std::istringstream& args);
   void cmd_b(std::istringstream& args);
+  void cmd_i(std::istringstream& args);
 
   static const std::map<std::string, cmd_entry> cmd_table;
    

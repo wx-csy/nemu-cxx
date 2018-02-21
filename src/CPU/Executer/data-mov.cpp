@@ -15,7 +15,7 @@ void Executer<T>::XCHG() {
 
 template <typename T>
 void Executer<T>::PUSH() {
-  push(*src);
+  push(*dest);
 }
 
 template <typename T>

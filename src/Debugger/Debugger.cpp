@@ -13,6 +13,7 @@ const std::map<std::string, Debugger::cmd_entry> Debugger::cmd_table = {
   {"si", {"Execute one or more instructions", &Debugger::cmd_si}}, 
   {"p", {"Evaluate and print expression", &Debugger::cmd_p}},
   {"b", {"Add breakpoint", &Debugger::cmd_b}},
+  {"i", {"Print CPU information", &Debugger::cmd_i}},
 };
 
 Debugger::Debugger(CPU& cpu, Memory& memory) : 
@@ -106,6 +107,15 @@ void Debugger::cmd_b(std::istringstream& args) {
   uint32_t value = expression();
   breakpoints.insert(value);
   printf("  Breakpoint 0x%08x successfully added!\n", value);
+}
+
+void Debugger::cmd_i(std::istringstream& args) {
+  int num_of_entries = 12;
+  for (int i=0; i<num_of_entries; i++) {
+    if (i < 8) printf("$gpr[%d]\t0x%08x\n", i, cpu.gpr[i]._32);
+    else if (i == 9) printf("$eip\t0x%08x\n", cpu.fetcher.eip);
+    else if (i == 10) printf("$efl\t0x%08x\n", cpu.efl);
+  }
 }
 
 void Debugger::exec_wrapper() {
