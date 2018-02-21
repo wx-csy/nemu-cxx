@@ -7,17 +7,17 @@ void CPU::exec_wrapper() {
   switch (decoder.operand_size) {
     case SIZE_8:
       Assert(decoder.current_decode_entry->exec8_helper, 
-          "Executer not found!");
+          "Executor not found!");
       (this->exec8.*(decoder.current_decode_entry->exec8_helper))();
       break;
     case SIZE_16:
       Assert(decoder.current_decode_entry->exec16_helper, 
-          "Executer not found!");
+          "Executor not found!");
       (this->exec16.*(decoder.current_decode_entry->exec16_helper))();
       break;
     case SIZE_32:
       Assert(decoder.current_decode_entry->exec32_helper, 
-          "Executer not found!");
+          "Executor not found!");
       (this->exec32.*(decoder.current_decode_entry->exec32_helper))();
       break;
     default:

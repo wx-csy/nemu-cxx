@@ -2,19 +2,19 @@
 #include "CPU.hpp"
 
 template <typename T>
-void Executer<T>::imul_set_CFOF(T a, T b, T* c) {
+void Executor<T>::imul_set_CFOF(T a, T b, T* c) {
   cpu.eflags.CF = cpu.eflags.OF = 
     __builtin_mul_overflow(ST(a), ST(b), reinterpret_cast<ST*>(c));
 }
 
 template <>
-void Executer<uint8_t>::MUL() {
+void Executor<uint8_t>::MUL() {
   cpu.ax = (uint16_t)(*dest) * cpu.al;
   cpu.eflags.CF = cpu.eflags.OF = (bool)cpu.ah;
 }
 
 template <>
-void Executer<uint16_t>::MUL() {
+void Executor<uint16_t>::MUL() {
   union {
     struct {uint16_t low, high;};
     uint32_t result;
@@ -26,7 +26,7 @@ void Executer<uint16_t>::MUL() {
 }
 
 template <>
-void Executer<uint32_t>::MUL() {
+void Executor<uint32_t>::MUL() {
   union {
     struct {uint32_t low, high;};
     uint64_t result;
@@ -38,13 +38,13 @@ void Executer<uint32_t>::MUL() {
 }
 
 template <>
-void Executer<uint8_t>::IMUL1() {
+void Executor<uint8_t>::IMUL1() {
   cpu.ax = (int16_t)(int8_t)(*dest) * (int8_t)cpu.al;
   cpu.eflags.CF = cpu.eflags.OF = ((int8_t)cpu.ah == cpu.ah);
 }
 
 template <>
-void Executer<uint16_t>::IMUL1() {
+void Executor<uint16_t>::IMUL1() {
   union {
     struct {uint16_t low, high;};
     uint32_t result;
@@ -57,7 +57,7 @@ void Executer<uint16_t>::IMUL1() {
 }
 
 template <>
-void Executer<uint32_t>::IMUL1() {
+void Executor<uint32_t>::IMUL1() {
   union {
     struct {uint32_t low, high;};
     uint64_t result;
@@ -70,24 +70,24 @@ void Executer<uint32_t>::IMUL1() {
 }
 
 template <typename T>
-void Executer<T>::IMUL2() {
+void Executor<T>::IMUL2() {
   imul_set_CFOF(*dest, *src, dest);
 }
 
 template <typename T>
-void Executer<T>::IMUL3() {
+void Executor<T>::IMUL3() {
   imul_set_CFOF(cpu.decoder.op_immd, *src, dest);
 }
 
 template <>
-void Executer<uint8_t>::DIV() {
+void Executor<uint8_t>::DIV() {
   uint8_t rem = cpu.ax % *dest;
   cpu.al = cpu.ax / *dest;
   cpu.ah = rem;
 }
 
 template <>
-void Executer<uint16_t>::DIV() {
+void Executor<uint16_t>::DIV() {
   union {
     struct {uint16_t low, high;};
     uint32_t value;
@@ -100,7 +100,7 @@ void Executer<uint16_t>::DIV() {
 }
 
 template <>
-void Executer<uint32_t>::DIV() {
+void Executor<uint32_t>::DIV() {
   union {
     struct {uint32_t low, high;};
     uint64_t value;
@@ -113,14 +113,14 @@ void Executer<uint32_t>::DIV() {
 }
 
 template <>
-void Executer<uint8_t>::IDIV() {
+void Executor<uint8_t>::IDIV() {
   int8_t rem = (int16_t)cpu.ax % (int8_t)*dest;
   cpu.al = (int16_t)cpu.ax / (int8_t)*dest;
   cpu.ah = rem;
 }
 
 template <>
-void Executer<uint16_t>::IDIV() {
+void Executor<uint16_t>::IDIV() {
   union {
     struct {uint16_t low, high;};
     int32_t value;
@@ -133,7 +133,7 @@ void Executer<uint16_t>::IDIV() {
 }
 
 template <>
-void Executer<uint32_t>::IDIV() {
+void Executor<uint32_t>::IDIV() {
   union {
     struct {uint32_t low, high;};
     int64_t value;
@@ -145,7 +145,7 @@ void Executer<uint32_t>::IDIV() {
   cpu.edx = rem;
 }
 
-template class Executer<uint8_t>;
-template class Executer<uint16_t>;
-template class Executer<uint32_t>;
+template class Executor<uint8_t>;
+template class Executor<uint16_t>;
+template class Executor<uint32_t>;
 

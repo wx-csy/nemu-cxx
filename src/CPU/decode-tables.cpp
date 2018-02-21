@@ -10,29 +10,29 @@
 
 #define I(decode_helper, instr_name) \
   {&Decoder::decode_##decode_helper, \
-   &Executer<uint32_t>::instr_name, \
-   &Executer<uint16_t>::instr_name, \
-   &Executer<uint8_t>::instr_name, \
+   &Executor<uint32_t>::instr_name, \
+   &Executor<uint16_t>::instr_name, \
+   &Executor<uint8_t>::instr_name, \
    SIZE_NONE, true} 
 
 #define IB(decode_helper, instr_name) \
   {&Decoder::decode_##decode_helper, \
    NULL, \
    NULL, \
-   &Executer<uint8_t>::instr_name, \
+   &Executor<uint8_t>::instr_name, \
    SIZE_8, true} 
 
 #define IE(instr_name) \
   {NULL, \
-   &Executer<uint32_t>::instr_name, \
-   &Executer<uint16_t>::instr_name, \
-   &Executer<uint8_t>::instr_name, \
+   &Executor<uint32_t>::instr_name, \
+   &Executor<uint16_t>::instr_name, \
+   &Executor<uint8_t>::instr_name, \
    SIZE_NONE, true}
 
 #define IvE(instr_name) \
   {NULL, \
-   &Executer<uint32_t>::instr_name, \
-   &Executer<uint16_t>::instr_name, \
+   &Executor<uint32_t>::instr_name, \
+   &Executor<uint16_t>::instr_name, \
    NULL, \
    SIZE_NONE, true}
 

@@ -7,7 +7,7 @@
 #include "CPU/Fetcher.hpp"
 
 struct CPU;
-template <typename T> struct Executer;
+template <typename T> struct Executor;
 
 struct Decoder { 
   CPU& cpu;
@@ -36,9 +36,9 @@ struct Decoder {
 
   struct decode_entry {
     void (Decoder::*decode_helper)();
-    void (Executer<uint32_t>::*exec32_helper)();
-    void (Executer<uint16_t>::*exec16_helper)();
-    void (Executer<uint8_t>::*exec8_helper)();
+    void (Executor<uint32_t>::*exec32_helper)();
+    void (Executor<uint16_t>::*exec16_helper)();
+    void (Executor<uint8_t>::*exec8_helper)();
     SIZE default_operand_size;
     bool is_instr;
   };

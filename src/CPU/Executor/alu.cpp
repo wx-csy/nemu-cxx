@@ -2,42 +2,42 @@
 #include "CPU.hpp"
 
 template <typename T>
-inline void Executer<T>::update_ZFSFPF(T x) {
+inline void Executor<T>::update_ZFSFPF(T x) {
   cpu.eflags.ZF = (x == 0);
   cpu.eflags.SF = (ST(x) < 0);
   cpu.eflags.PF = __builtin_parity(uint8_t(x));
 }
 
 template <typename T>
-inline void Executer<T>::clear_CFOF() {
+inline void Executor<T>::clear_CFOF() {
   cpu.eflags.CF = 0;
   cpu.eflags.OF = 0;
 }
 
 template <typename T>
-inline void Executer<T>::add_set_CF(T a, T b, T* c) {
+inline void Executor<T>::add_set_CF(T a, T b, T* c) {
   cpu.eflags.CF = __builtin_add_overflow(a, b, c);
 }
 
 template <typename T>
-inline void Executer<T>::add_set_OF(T a, T b, T* c) {
+inline void Executor<T>::add_set_OF(T a, T b, T* c) {
   cpu.eflags.OF = 
     __builtin_add_overflow(ST(a), ST(b), reinterpret_cast<ST*>(c));
 }
 
 template <typename T>
-inline void Executer<T>::sub_set_CF(T a, T b, T* c) {
+inline void Executor<T>::sub_set_CF(T a, T b, T* c) {
   cpu.eflags.CF = __builtin_sub_overflow(a, b, c);
 }
 
 template <typename T>
-inline void Executer<T>::sub_set_OF(T a, T b, T* c) {
+inline void Executor<T>::sub_set_OF(T a, T b, T* c) {
   cpu.eflags.OF = 
     __builtin_sub_overflow(ST(a), ST(b), reinterpret_cast<ST*>(c));
 }
 
 template <typename T>
-void Executer<T>::ADD() {
+void Executor<T>::ADD() {
   T temp;
   add_set_OF(*dest, *src, &temp);
   add_set_CF(*dest, *src, dest);
@@ -45,7 +45,7 @@ void Executer<T>::ADD() {
 }
 
 template <typename T>
-void Executer<T>::ADC() {
+void Executor<T>::ADC() {
   T temp;
   add_set_OF(*dest, *src, &temp);
   if (!cpu.eflags.OF) add_set_OF(temp, cpu.eflags.CF, &temp);
@@ -55,7 +55,7 @@ void Executer<T>::ADC() {
 }
 
 template <typename T>
-void Executer<T>::SUB() {
+void Executor<T>::SUB() {
   T temp;
   sub_set_OF(*dest, *src, &temp);
   sub_set_CF(*dest, *src, dest);
@@ -63,7 +63,7 @@ void Executer<T>::SUB() {
 }
 
 template <typename T>
-void Executer<T>::SBB() {
+void Executor<T>::SBB() {
   T temp;
   sub_set_OF(*dest, *src, &temp);
   if (!cpu.eflags.OF) sub_set_OF(temp, cpu.eflags.CF, &temp);
@@ -73,7 +73,7 @@ void Executer<T>::SBB() {
 }
 
 template <typename T>
-void Executer<T>::CMP() {
+void Executor<T>::CMP() {
   T temp;
   sub_set_OF(*dest, *src, &temp);
   sub_set_CF(*dest, *src, &temp);
@@ -81,73 +81,73 @@ void Executer<T>::CMP() {
 }
 
 template <typename T>
-void Executer<T>::INC() {
+void Executor<T>::INC() {
   add_set_OF(*dest, T(1), dest);
   update_ZFSFPF(*dest);
 }
 
 template <typename T>
-void Executer<T>::DEC() {
+void Executor<T>::DEC() {
   sub_set_OF(*dest, T(1), dest);
   update_ZFSFPF(*dest);
 }
 
 template <typename T>
-void Executer<T>::NEG() {
+void Executor<T>::NEG() {
   sub_set_OF(T(0), *dest, dest);
   cpu.eflags.CF = (ST(*dest) <= 0);
   update_ZFSFPF(*dest);
 }
 
 template <typename T>
-void Executer<T>::AND() {
+void Executor<T>::AND() {
   clear_CFOF();
   update_ZFSFPF(*dest &= *src);
 }
 
 template <typename T>
-void Executer<T>::OR() {
+void Executor<T>::OR() {
   clear_CFOF();
   update_ZFSFPF(*dest |= *src);
 }
 
 template <typename T>
-void Executer<T>::TEST() {
+void Executor<T>::TEST() {
   clear_CFOF();
   update_ZFSFPF(*dest & *src);
 }
 
 template <typename T>
-void Executer<T>::XOR() {
+void Executor<T>::XOR() {
   clear_CFOF();
   update_ZFSFPF(*dest ^= *src);
 }
 
 template <typename T>
-void Executer<T>::NOT() {
+void Executor<T>::NOT() {
   *dest = ~*dest; 
 }
 
 template <typename T>
-void Executer<T>::SHL() {
+void Executor<T>::SHL() {
   // TODO: update CF and OF
   update_ZFSFPF(*dest <<= (*src & 31));
 }
 
 template <typename T>
-void Executer<T>::SHR() {
+void Executor<T>::SHR() {
   // TODO: update CF and OF
   update_ZFSFPF(*dest >>= (*src & 31));
 }
 
 template <typename T>
-void Executer<T>::SAR() {
+void Executor<T>::SAR() {
   // TODO: update CF and OF
   update_ZFSFPF(reinterpret_cast<ST&>(*dest) >>= (*src & 31));
 }
 
 template <typename T>
-void Executer<T>::ROL() {
+void Executor<T>::ROL() {
   // TODO: update CF and OF
   const T mask = (8 * sizeof(T) - 1);
   T temp = *src & mask;
@@ -155,7 +155,7 @@ void Executer<T>::ROL() {
 }
 
 template <typename T>
-void Executer<T>::ROR() {
+void Executor<T>::ROR() {
   // TODO: update CF and OF
   const T mask = (8 * sizeof(T) - 1);
   T temp = *src & mask;
@@ -163,11 +163,11 @@ void Executer<T>::ROR() {
 }
 
 template <typename T>
-void Executer<T>::SETcc() {
+void Executor<T>::SETcc() {
   *dest = cpu.getcc(cpu.decoder.opcode & 0xf);
 }
 
-template class Executer<uint8_t>;
-template class Executer<uint16_t>;
-template class Executer<uint32_t>;
+template class Executor<uint8_t>;
+template class Executor<uint16_t>;
+template class Executor<uint32_t>;
 

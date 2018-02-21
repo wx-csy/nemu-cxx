@@ -7,16 +7,16 @@
 struct CPU;
 
 template <typename T>
-struct Executer {
+struct Executor {
   static_assert(std::is_unsigned<T>::value,
-      "Template argument for `Executer' must be unsigned!");
+      "Template argument for `Executor' must be unsigned!");
 
   typedef typename std::make_signed<T>::type ST;
     
   CPU& cpu;
   T *const &dest, *const &src;
 
-  Executer(CPU& cpu);
+  Executor(CPU& cpu);
 
   // ALU instructions
   void ADD();

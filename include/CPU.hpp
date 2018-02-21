@@ -7,7 +7,7 @@
 #include "CPU/MMU.hpp"
 #include "CPU/Fetcher.hpp"
 #include "CPU/Decoder.hpp"
-#include "CPU/Executer.hpp"
+#include "CPU/Executor.hpp"
 
 struct CPU {
   static const vaddr_t ENTRY_START = 0x100000;
@@ -84,10 +84,10 @@ struct CPU {
 
   Decoder decoder;
 
-  // ---------- Executer ----------
-  Executer<uint32_t> exec32;
-  Executer<uint16_t> exec16;
-  Executer<uint8_t> exec8;  
+  // ---------- Executor ----------
+  Executor<uint32_t> exec32;
+  Executor<uint16_t> exec16;
+  Executor<uint8_t> exec8;  
 
   // ---------- Controller ----------
   uint32_t eip_before_exec;
