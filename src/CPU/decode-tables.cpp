@@ -38,9 +38,9 @@
     NULL, NULL, NULL, SIZE_8, false}
 
 const Decoder::decode_entry Decoder::opcode_table[256] = {
-  /* 0x00 */ EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0x00 */ IB(G2E, ADD), I(G2E, ADD), IB(E2G, ADD), I(E2G, ADD),
   /* 0x04 */ EMPTY, EMPTY, EMPTY, EMPTY,
-  /* 0x08 */ EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0x08 */ IB(G2E, OR), I(G2E, OR), IB(E2G, OR), I(E2G, OR),
   /* 0x0c */ EMPTY, EMPTY, EMPTY, PREF(twobyte_escape),
   
   /* 0x10 */ EMPTY, EMPTY, EMPTY, EMPTY,

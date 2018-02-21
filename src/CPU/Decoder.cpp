@@ -201,7 +201,7 @@ void Decoder::decode_prefix() {
 }
 
 void Decoder::decode_UD() {
-  panic("Undefined instruction (%02x), eip = %08x", opcode, fetcher.eip - 1);
+  panic("Undefined instruction (%02x), eip = %08x", opcode, cpu.eip_before_exec);
 }
 
 void Decoder::decode_I2E_gp1() {
@@ -215,8 +215,9 @@ void Decoder::decode_SI2E_gp1() {
 }
 
 void Decoder::decode_Ib2E_gp2() {
-  op_immd = fetcher.fetch<uint8_t>();
   decode_E();
+  op_immd = fetcher.fetch<uint8_t>();
+  src = &op_immd;
   current_decode_entry = &groups_table[2][ModRM.reg_op];
 }
 

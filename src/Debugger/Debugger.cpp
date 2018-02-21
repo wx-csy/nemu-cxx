@@ -118,9 +118,11 @@ void Debugger::cmd_i(std::istringstream& args) {
   }
 }
 
+uint64_t tsc = 0;
+
 void Debugger::exec_wrapper() {
   cpu.exec_wrapper();
-
+  tsc++;
   if (breakpoints.find(cpu.fetcher.eip) != breakpoints.end())
     throw std::runtime_error("Breakpoint triggered!");
 };
@@ -144,6 +146,7 @@ void Debugger::mainloop() {
       }
     } catch (std::exception& ex) {
       printf("Exception caught: %s\n", ex.what());
+      std::cout << "TSC: " << tsc << std::endl;
     }
   }
 }
