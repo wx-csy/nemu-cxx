@@ -76,7 +76,7 @@ inline void* Decoder::decode_op_I() {
   return &op_immd;
 }
 
-inline void* Decoder::decode_op_SI() {
+inline void* Decoder::decode_op_Ib() {
   op_immd = (int8_t)fetcher.fetch<uint8_t>();
   return &op_immd;
 }
@@ -90,7 +90,7 @@ inline void* Decoder::decode_op_r() {
 }
 
 inline void* Decoder::decode_op_O() {
-  uint32_t addr = fetcher.fetch_s(operand_size);
+  uint32_t addr = fetcher.fetch<uint32_t>();
   return cpu.mmu.memory_access(addr, operand_size);
 }
 
@@ -146,10 +146,10 @@ void Decoder::decode_I2E() {
   src = decode_op_I();
 }
 
-void Decoder::decode_SI2E() {
+void Decoder::decode_Ib2E() {
   ModRM_decode();
   dest = ModRM_get_rm_ptr();
-  src = decode_op_SI();
+  src = decode_op_Ib();
 }
 
 void Decoder::decode_I2r() {
@@ -201,7 +201,7 @@ void Decoder::decode_prefix() {
 }
 
 void Decoder::decode_UD() {
-  panic("Undefined instruction (%02x), eip = %08x", opcode, cpu.eip_before_exec);
+  panic("Undefined instruction (%02x), eip = %08x", opcode, cpu.fetcher.eip);
 }
 
 void Decoder::decode_I2E_gp1() {
@@ -209,8 +209,8 @@ void Decoder::decode_I2E_gp1() {
   current_decode_entry = &groups_table[1][ModRM.reg_op];
 }
 
-void Decoder::decode_SI2E_gp1() {
-  decode_SI2E();
+void Decoder::decode_Ib2E_gp1() {
+  decode_Ib2E();
   current_decode_entry = &groups_table[1][ModRM.reg_op];
 }
 
@@ -219,6 +219,11 @@ void Decoder::decode_Ib2E_gp2() {
   op_immd = fetcher.fetch<uint8_t>();
   src = &op_immd;
   current_decode_entry = &groups_table[2][ModRM.reg_op];
+}
+
+void Decoder::decode_E_gp3() {
+  decode_E();
+  current_decode_entry = &groups_table[3][ModRM.reg_op];
 }
 
 void Decoder::decode_E_gp5() {

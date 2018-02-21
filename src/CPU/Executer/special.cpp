@@ -7,7 +7,8 @@ void Executer<T>::NEMU_TRAP() {
   printf("\33[1;31mnemu: HIT %s TRAP\33[0m at $eip = 0x%08x with $eax = 0x%08x\n",
       (cpu.eax == 0 ? "GOOD": "BAD"), cpu.fetcher.eip, cpu.eax);
   
-  std::exit(0);
+  throw std::runtime_error("nemu trap");
+  // std::exit(0);
 }
 
 template <typename T>

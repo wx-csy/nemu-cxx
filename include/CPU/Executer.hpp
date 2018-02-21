@@ -38,6 +38,12 @@ struct Executer {
   void ROL();
   void ROR();
   void SETcc();
+  
+  // mul/div instructions
+  void MUL();
+  void IMUL1();
+  void IMUL2();
+  void IMUL3();
 
   // data-mov instructions
   void MOV();
@@ -72,6 +78,7 @@ private:
   void add_set_OF(T a, T b, T* c);
   void sub_set_CF(T a, T b, T* c);
   void sub_set_OF(T a, T b, T* c);
+  void imul_set_CFOF(T a, T b, T* c);
 
   void push(T x);
   T pop();

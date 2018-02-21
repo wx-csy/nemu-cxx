@@ -22,7 +22,7 @@ inline void Executer<T>::add_set_CF(T a, T b, T* c) {
 template <typename T>
 inline void Executer<T>::add_set_OF(T a, T b, T* c) {
   cpu.eflags.OF = 
-    __builtin_add_overflow(a, b, reinterpret_cast<ST*>(c));
+    __builtin_add_overflow(ST(a), ST(b), reinterpret_cast<ST*>(c));
 }
 
 template <typename T>
@@ -33,7 +33,7 @@ inline void Executer<T>::sub_set_CF(T a, T b, T* c) {
 template <typename T>
 inline void Executer<T>::sub_set_OF(T a, T b, T* c) {
   cpu.eflags.OF = 
-    __builtin_sub_overflow(a, b, reinterpret_cast<ST*>(c));
+    __builtin_sub_overflow(ST(a), ST(b), reinterpret_cast<ST*>(c));
 }
 
 template <typename T>
@@ -46,7 +46,12 @@ void Executer<T>::ADD() {
 
 template <typename T>
 void Executer<T>::ADC() {
-  Assert(0, "Unimplemented!");
+  T temp;
+  add_set_OF(*dest, *src, &temp);
+  if (!cpu.eflags.OF) add_set_OF(temp, cpu.eflags.CF, &temp);
+  add_set_CF(*dest, cpu.eflags.CF, dest);
+  if (!cpu.eflags.CF) add_set_CF(*dest, *src, dest); else *dest += *src;
+  update_ZFSFPF(*dest);  
 }
 
 template <typename T>
@@ -59,7 +64,12 @@ void Executer<T>::SUB() {
 
 template <typename T>
 void Executer<T>::SBB() {
-  Assert(0, "Unimplemented!");
+  T temp;
+  sub_set_OF(*dest, *src, &temp);
+  if (!cpu.eflags.OF) sub_set_OF(temp, cpu.eflags.CF, &temp);
+  sub_set_CF(*dest, cpu.eflags.CF, dest);
+  if (!cpu.eflags.CF) sub_set_CF(*dest, *src, dest); else *dest -= *src;
+  update_ZFSFPF(*dest);
 }
 
 template <typename T>

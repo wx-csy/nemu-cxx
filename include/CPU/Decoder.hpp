@@ -52,7 +52,7 @@ struct Decoder {
   void decode_wrapper();
 
   void* decode_op_I();
-  void* decode_op_SI();
+  void* decode_op_Ib();
   void* decode_op_a();
   void* decode_op_r();
   void* decode_op_O();
@@ -72,7 +72,7 @@ struct Decoder {
   void decode_M2G_lea();
   void decode_I2a();
   void decode_I2E();
-  void decode_SI2E();
+  void decode_Ib2E();
   void decode_I2r();
   void decode_O2a();
   void decode_a2O(); 
@@ -86,9 +86,9 @@ struct Decoder {
   void decode_twobyte_escape();
   
   void decode_I2E_gp1();
-  void decode_SI2E_gp1();
+  void decode_Ib2E_gp1();
   void decode_Ib2E_gp2();
-  void decode_group3();
+  void decode_E_gp3();
   void decode_group4();
   void decode_E_gp5();
   void decode_group7();

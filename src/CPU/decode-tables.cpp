@@ -39,24 +39,24 @@
 
 const Decoder::decode_entry Decoder::opcode_table[256] = {
   /* 0x00 */ IB(G2E, ADD), I(G2E, ADD), IB(E2G, ADD), I(E2G, ADD),
-  /* 0x04 */ EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0x04 */ IB(I2a, ADD), I(I2a, ADD), EMPTY, EMPTY,
   /* 0x08 */ IB(G2E, OR), I(G2E, OR), IB(E2G, OR), I(E2G, OR),
-  /* 0x0c */ EMPTY, EMPTY, EMPTY, PREF(twobyte_escape),
+  /* 0x0c */ IB(I2a, OR), I(I2a, OR), EMPTY, PREF(twobyte_escape),
   
-  /* 0x10 */ EMPTY, EMPTY, EMPTY, EMPTY,
-  /* 0x14 */ EMPTY, EMPTY, EMPTY, EMPTY,
-  /* 0x18 */ EMPTY, EMPTY, EMPTY, EMPTY,
-  /* 0x1c */ EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0x10 */ IB(G2E, ADC), I(G2E, ADC), IB(E2G, ADC), I(E2G, ADC),
+  /* 0x14 */ IB(I2a, ADC), I(I2a, ADC), EMPTY, EMPTY,
+  /* 0x18 */ IB(G2E, SBB), I(G2E, SBB), IB(E2G, SBB), I(E2G, SBB),
+  /* 0x1c */ IB(I2a, SBB), I(I2a, SBB), EMPTY, EMPTY,
 
   /* 0x20 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x24 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x28 */ IB(G2E, SUB), I(G2E, SUB), IB(E2G, SUB), I(E2G, SUB),
-  /* 0x2c */ EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0x2c */ IB(I2a, SUB), I(I2a, SUB), EMPTY, EMPTY,
 
   /* 0x30 */ IB(G2E, XOR), I(G2E, XOR), IB(E2G, XOR), I(E2G, XOR),
-  /* 0x34 */ EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0x34 */ IB(I2a, XOR), I(I2a, XOR), EMPTY, EMPTY,
   /* 0x38 */ IB(G2E, CMP), I(G2E, CMP), IB(E2G, CMP), I(E2G, CMP),
-  /* 0x3c */ EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0x3c */ IB(I2a, CMP), I(I2a, CMP), EMPTY, EMPTY,
 
   /* 0x40 */ I(r, INC), I(r, INC), I(r, INC), I(r, INC),
   /* 0x44 */ I(r, INC), I(r, INC), I(r, INC), I(r, INC), 
@@ -78,7 +78,7 @@ const Decoder::decode_entry Decoder::opcode_table[256] = {
   /* 0x78 */ IB(J, Jcc), IB(J, Jcc), IB(J, Jcc), IB(J, Jcc),
   /* 0x7c */ IB(J, Jcc), IB(J, Jcc), IB(J, Jcc), IB(J, Jcc),
 
-  /* 0x80 */ GB(I2E_gp1), G(I2E_gp1), EMPTY, G(SI2E_gp1),
+  /* 0x80 */ GB(I2E_gp1), G(I2E_gp1), EMPTY, G(Ib2E_gp1),
   /* 0x84 */ IB(E2G, TEST), I(E2G, TEST), EMPTY, EMPTY,
   /* 0x88 */ IB(G2E, MOV), I(G2E, MOV), IB(E2G, MOV), I(E2G, MOV),
   /* 0x8c */ EMPTY, I(M2G_lea, LEA), EMPTY, EMPTY,
@@ -114,7 +114,7 @@ const Decoder::decode_entry Decoder::opcode_table[256] = {
   /* 0xec */ EMPTY, EMPTY, IE(OUT), EMPTY, 
 
   /* 0xf0 */ EMPTY, EMPTY, EMPTY, EMPTY,
-  /* 0xf4 */ EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0xf4 */ EMPTY, EMPTY, GB(E_gp3), G(E_gp3),
   /* 0xf8 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0xfc */ EMPTY, EMPTY, EMPTY, G(E_gp5),
 };
@@ -215,8 +215,8 @@ const Decoder::decode_entry Decoder::groups_table[8][8] = {
   /* 0x24 */ IE(SHL), IE(SHR), EMPTY, IE(SAR),
 },
 { // GROUP 3
-  /* 0x30 */ EMPTY, EMPTY, EMPTY, EMPTY,
-  /* 0x34 */ EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0x30 */ I(I_test, TEST), EMPTY, IE(NOT), IE(NEG),
+  /* 0x34 */ IE(MUL), IE(IMUL1), EMPTY, EMPTY,
 },
 { // GROUP 4
   /* 0x40 */ EMPTY, EMPTY, EMPTY, EMPTY,
