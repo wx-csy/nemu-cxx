@@ -3,10 +3,17 @@
 #include "Memory.hpp"
 #include "CPU.hpp"
 #include "Debugger.hpp"
+#include "devices/pio_device.hpp"
+#include "devices/Serial.hpp"
 
 namespace Motherboard {
   Memory memory;
-  CPU cpu(memory);
+
+  Ports ports;
+  Serial serial(ports);
+
+  CPU cpu(memory, ports);
+  
   Debugger debugger(cpu, memory);
 };
 

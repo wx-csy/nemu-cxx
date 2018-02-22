@@ -70,6 +70,8 @@ struct Executor {
   // special instructions
   void NEMU_TRAP();
   void NOP();
+
+  // system instructions
   void IN();
   void OUT();
 

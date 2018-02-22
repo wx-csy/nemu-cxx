@@ -4,6 +4,7 @@
 #include <type_traits>
 #include "common.h"
 #include "Memory.hpp"
+#include "devices/pio_device.hpp"
 #include "CPU/MMU.hpp"
 #include "CPU/Fetcher.hpp"
 #include "CPU/Decoder.hpp"
@@ -11,9 +12,11 @@
 
 struct CPU {
   static const vaddr_t ENTRY_START = 0x100000;
-
+  
   Memory& memory;
-  CPU(Memory& memory); 
+  Ports& ports;
+  
+  CPU(Memory& memory, Ports& ports); 
 
   // ---------- General Purpose Register Set ----------
   union {

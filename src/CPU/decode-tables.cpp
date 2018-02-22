@@ -97,7 +97,7 @@ const Decoder::decode_entry Decoder::opcode_table[256] = {
 
   /* 0xa0 */ IB(O2a, MOV), I(O2a, MOV), IB(a2O, MOV), I(a2O, MOV),
   /* 0xa4 */ EMPTY, EMPTY, EMPTY, EMPTY,
-  /* 0xa8 */ EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0xa8 */ IB(I2a, TEST), I(I2a, TEST), EMPTY, EMPTY,
   /* 0xac */ EMPTY, EMPTY, EMPTY, EMPTY,
 
   /* 0xb0 */ IB(I2r, MOV), IB(I2r, MOV), IB(I2r, MOV), IB(I2r, MOV),
@@ -119,7 +119,7 @@ const Decoder::decode_entry Decoder::opcode_table[256] = {
   /* 0xe0 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0xe4 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0xe8 */ I(J, CALL), I(J, JMP), EMPTY, IB(J, JMP),
-  /* 0xec */ EMPTY, EMPTY, IE(OUT), EMPTY, 
+  /* 0xec */ IB(IO_dx, IN), EMPTY, IB(IO_dx, OUT), EMPTY, 
 
   /* 0xf0 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0xf4 */ EMPTY, EMPTY, GB(E_gp3), G(E_gp3),

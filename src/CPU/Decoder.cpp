@@ -167,6 +167,16 @@ void Decoder::decode_a2O() {
   src = decode_op_a();
 }
 
+void Decoder::decode_IO_i() {
+  dest = decode_op_a();
+  op_immd = fetcher.fetch<uint8_t>();
+}
+
+void Decoder::decode_IO_dx() {
+  dest = decode_op_a();
+  op_immd = cpu.dx;
+}
+
 void Decoder::decode_I() {
   dest = decode_op_I();
 }
