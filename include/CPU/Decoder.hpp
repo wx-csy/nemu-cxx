@@ -76,6 +76,8 @@ struct Decoder {
   void decode_I2r();
   void decode_O2a();
   void decode_a2O(); 
+  void decode_IO_i();
+  void decode_IO_dx();
 
   // Ternary decoder
   void decode_I_E2G(); // for imul, the imm must be accessed thru op_immd

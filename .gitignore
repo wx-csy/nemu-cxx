@@ -1,3 +1,6 @@
+*.d
+*.o
 /build/
 *.swp
+*.txt
 

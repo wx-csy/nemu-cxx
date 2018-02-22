@@ -16,17 +16,6 @@ void Executor<T>::NOP() {
 
 }
 
-// TODO: finish IN and OUT
-template <typename T>
-void Executor<T>::IN() {
-  printf("IN(%d): $eax = %08x, $edx = %08x\n", (int) sizeof(T), cpu.eax, cpu.edx);
-}
-
-template <typename T>
-void Executor<T>::OUT() {
-  printf("OUT(%d): $eax = %08x, $edx = %08x\n", (int) sizeof(T), cpu.eax, cpu.edx);
-}
-
 template class Executor<uint8_t>;
 template class Executor<uint16_t>;
 template class Executor<uint32_t>;
