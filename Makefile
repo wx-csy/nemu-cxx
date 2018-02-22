@@ -54,3 +54,6 @@ gdb: $(BINARY)
 clean: 
 	rm -rf $(BUILD_DIR)
 
+count:
+		find . | grep '\.cpp$$\|\.h$$\|\.hpp$$' | xargs wc -l
+		find . | grep '\.cpp$$\|\.h$$\|\.hpp$$' | xargs cat | grep -v ^$$ | wc -l
