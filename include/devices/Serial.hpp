@@ -10,7 +10,7 @@ struct Serial : pio_device {
   static const pio_addr_t LSR_PORT = SERIAL_PORT + 5;
 
   Serial(Ports& ports) : pio_device(ports, SERIAL_PORT, SERIAL_PORT + 7)
-  {}
+  { Log("Serial initialized."); }
 
   uint32_t read(pio_addr_t port, SIZE size) {
     if (port == LSR_PORT) {

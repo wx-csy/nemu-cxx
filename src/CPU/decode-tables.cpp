@@ -119,7 +119,7 @@ const Decoder::decode_entry Decoder::opcode_table[256] = {
   /* 0xe0 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0xe4 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0xe8 */ I(J, CALL), I(J, JMP), EMPTY, IB(J, JMP),
-  /* 0xec */ IB(IO_dx, IN), EMPTY, IB(IO_dx, OUT), EMPTY, 
+  /* 0xec */ IB(IO_dx, IN), I(IO_dx, IN), IB(IO_dx, OUT), I(IO_dx, OUT), 
 
   /* 0xf0 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0xf4 */ EMPTY, EMPTY, GB(E_gp3), G(E_gp3),

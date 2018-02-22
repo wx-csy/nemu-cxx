@@ -5,13 +5,14 @@
 #include "Debugger.hpp"
 #include "devices/pio_device.hpp"
 #include "devices/Serial.hpp"
+#include "devices/Timer.hpp"
 
 namespace Motherboard {
   Memory memory;
 
   Ports ports;
   Serial serial(ports);
-
+  Timer timer(ports);
   CPU cpu(memory, ports);
   
   Debugger debugger(cpu, memory);
