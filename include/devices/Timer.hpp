@@ -9,7 +9,10 @@
 struct Timer : pio_device {
   static const pio_addr_t RTC_PORT = 0x48;
 
-  Timer(Ports& ports) : pio_device(ports, RTC_PORT, RTC_PORT + 3) {
+  Timer(Ports& ports) {
+    for (pio_addr_t port = RTC_PORT; port <= RTC_PORT + 3; port++)
+      register_port(ports, port);
+    
     if (CLOCKS_PER_SEC < 1000)
       Log("\33[31mWarning: the timer of this platform has low accuracy. This may lead to loss of precision.\33[0m");
     
