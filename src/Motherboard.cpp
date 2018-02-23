@@ -6,9 +6,14 @@
 #include "devices/pio_device.hpp"
 #include "devices/Serial.hpp"
 #include "devices/Timer.hpp"
+#include "devices/VGA.hpp"
 
 namespace Motherboard {
   Memory memory;
+
+#if HAS_MMIO
+  VGA vga(memory);
+#endif
 
   Ports ports;
   Serial serial(ports);

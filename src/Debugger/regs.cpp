@@ -27,5 +27,6 @@ std::pair<void*, SIZE> get_reg_info(CPU& cpu, uint16_t id) {
     default:
       panic("Unexpected register id!");
   }
+  return {NULL, SIZE_NONE};
 }
 

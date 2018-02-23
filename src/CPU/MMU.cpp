@@ -39,6 +39,7 @@ uint32_t MMU::vaddr_read(vaddr_t addr, SIZE size) {
     case SIZE_8:  return vaddr_read<uint8_t>(addr);
     default: panic("Unexpected operand size!");
   } 
+  return 0;
 }
 
 template <>

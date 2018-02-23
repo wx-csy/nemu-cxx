@@ -1,8 +1,9 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
-#define DEBUG
-#define LOG
+// #define DEBUG
+// #define LOG
+// #define HAS_MMIO
 
 #include <cstdint>
 #include <cstddef>

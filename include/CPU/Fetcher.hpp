@@ -24,6 +24,7 @@ struct Fetcher {
       case SIZE_32: return fetch<uint32_t>();
       default:      panic("Unexpected opreand size!");
     }
+    return 0;
   }
 
   uint32_t fetch_s(SIZE sz) {
@@ -33,6 +34,7 @@ struct Fetcher {
       case SIZE_32: return (int32_t)fetch<uint32_t>();
       default:      panic("Unexpected opreand size!");
     }
+    return 0;
   }
 };
 

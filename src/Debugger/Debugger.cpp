@@ -43,7 +43,10 @@ void Debugger::load_image(const char* path) {
     uint32_t size = ftell(fp);
     fseek(fp, 0, SEEK_SET);
     int ret = fread(&memory.pmem[CPU::ENTRY_START], size, 1, fp);
-    assert(ret == 1);
+    if (ret != 1) {
+      printf("Error when loading image!");
+      throw std::runtime_error("Error when loading image.");
+    }
     fclose(fp);
   }
 }

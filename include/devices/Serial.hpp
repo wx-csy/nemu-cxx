@@ -22,6 +22,7 @@ struct Serial : pio_device {
       return 0x20;
     }
     panic("Unknown port: 0x%x (of Serial)", port);
+    return 0;
   }
 
   void write(pio_addr_t port, uint32_t data, SIZE size) {

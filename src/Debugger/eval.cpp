@@ -102,5 +102,6 @@ expr Debugger::build_expr(token_iter l, token_iter r) {
     }
   }
   panic("Should not reach here!");
+  return NULL;
 }
 

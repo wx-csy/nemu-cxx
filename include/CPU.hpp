@@ -54,6 +54,7 @@ struct CPU {
       case SIZE_32: return &gpr[id]._32;
       default:      panic("Unexpected register size!");
     }
+    return NULL;
   }
 
   bool getcc(uint8_t subcode) {
@@ -61,7 +62,7 @@ struct CPU {
       CC_O, CC_NO, CC_B, CC_NB, CC_E, CC_NE, CC_BE, CC_NBE,
       CC_S, CC_NS, CC_P, CC_NP, CC_L, CC_NL, CC_LE, CC_NLE
     };
-    bool result;
+    bool result = 0;
     switch (subcode & (~1)) {
       case CC_O:  result = eflags.OF; break;
       case CC_B:  result = eflags.CF; break;
