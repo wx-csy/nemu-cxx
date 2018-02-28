@@ -11,7 +11,7 @@
 namespace Motherboard {
   Memory memory;
 
-#if HAS_MMIO
+#if defined HAS_MMIO
   VGA vga(memory);
 #endif
 

@@ -1,20 +1,23 @@
 #ifndef __DEVICES_VGA_HPP__
 #define __DEVICES_VGA_HPP__
 
-#include <SDL2/SDL.h>
 #include "common.h"
-#include "devices/mmio_device.hpp"
+#include "Memory.hpp"
 
-struct VGA : mmio_device {
+struct SDL_Window;
+struct SDL_Renderer;
+struct SDL_Texture;
+
+struct VGA {
   static const paddr_t VGA_PMEM_BASE = 0x40000;
   
+  uint8_t *mem_base; 
   SDL_Window *window;
   SDL_Renderer *renderer;
   SDL_Texture *texture;
 
   VGA(Memory& memory);
-  void read(paddr_t addr, uint32_t& data);
-  void write(paddr_t addr, uint32_t data);
+  void update();
 };
 
 #endif

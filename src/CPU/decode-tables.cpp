@@ -77,7 +77,7 @@ const Decoder::decode_entry Decoder::opcode_table[256] = {
 
   /* 0x60 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x64 */ EMPTY, EMPTY, SZ(SIZE_16), EMPTY,
-  /* 0x68 */ I(I, PUSH), EMPTY, IB(I, PUSH), EMPTY,
+  /* 0x68 */ I(I, PUSH), EMPTY, I(Ib, PUSH), EMPTY,
   /* 0x6c */ EMPTY, EMPTY, EMPTY, EMPTY,
 
   /* 0x70 */ IB(J, Jcc), IB(J, Jcc), IB(J, Jcc), IB(J, Jcc),
@@ -215,7 +215,7 @@ const Decoder::decode_entry Decoder::groups_table[8][8] = {
   /* 0x04 */ EMPTY, EMPTY, EMPTY, EMPTY,
 },
 { // GROUP 1
-  /* 0x10 */ IE(ADD), IE(OR), EMPTY, EMPTY,
+  /* 0x10 */ IE(ADD), IE(OR), IE(ADC), IE(SBB),
   /* 0x14 */ IE(AND), IE(SUB), IE(XOR), IE(CMP),
 },
 { // GROUP 2

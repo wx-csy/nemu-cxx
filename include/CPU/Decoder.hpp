@@ -59,6 +59,7 @@ struct Decoder {
  
   // Unary decoder
   void decode_I(); 
+  void decode_Ib();
   void decode_r();
   void decode_E();
   void decode_I_test();

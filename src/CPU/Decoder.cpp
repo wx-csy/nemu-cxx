@@ -181,6 +181,10 @@ void Decoder::decode_I() {
   dest = decode_op_I();
 }
 
+void Decoder::decode_Ib() {
+  dest = decode_op_Ib();
+}
+
 void Decoder::decode_r() {
   dest = decode_op_r();
 }
@@ -211,6 +215,9 @@ void Decoder::decode_prefix() {
 }
 
 void Decoder::decode_UD() {
+#ifndef DEBUG
+  throw std::runtime_error("Undefined instruction!");
+#endif
   panic("Undefined instruction (%02x), eip = %08x", opcode, cpu.fetcher.eip);
 }
 
