@@ -1,26 +1,41 @@
 #include <cstring>
+#include <thread>
+#include <chrono>
 #include "common.h"
 #include "Memory.hpp"
 #include "CPU.hpp"
 #include "Debugger.hpp"
 #include "devices/pio_device.hpp"
 #include "devices/Serial.hpp"
-#include "devices/Timer.hpp"
+#include "devices/Clock.hpp"
 #include "devices/VGA.hpp"
+#include "devices/Keyboard.hpp"
 
 namespace Motherboard {
   Memory memory;
+  
+  Ports ports;
 
 #if defined HAS_MMIO
   VGA vga(memory);
+  Keyboard keyboard(ports);
 #endif
 
-  Ports ports;
   Serial serial(ports);
-  Timer timer(ports);
+  Clock clock(ports);
   CPU cpu(memory, ports);
   
   Debugger debugger(cpu, memory);
+
+  void mainloop() {
+    while (true) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(20));
+#if defined HAS_MMIO
+      vga.update();
+      keyboard.update();
+#endif
+    }
+  }
 };
 
 
@@ -47,7 +62,10 @@ int main(int argc, char* argv[]) {
   }
   printf("Welcome to NEMU!\n");
   Motherboard::debugger.load_image(img_path);
-  Motherboard::debugger.mainloop();
+
+  std::thread th(&Debugger::mainloop, Motherboard::debugger);
+  
+  Motherboard::mainloop();
   return 0;
 }
 

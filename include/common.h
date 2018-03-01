@@ -3,7 +3,7 @@
 
 // #define DEBUG
 // #define LOG
-// #define HAS_MMIO
+#define HAS_MMIO
 
 #include <cstdint>
 #include <cstddef>

@@ -1,15 +1,15 @@
-#ifndef __DEVICES_TIMER_HPP__
-#define __DEVICES_TIMER_HPP__
+#ifndef __DEVICES_CLOCK_HPP__
+#define __DEVICES_CLOCK_HPP__
 
 #include <ctime>
 #include <limits>
 #include "common.h"
 #include "devices/pio_device.hpp"
 
-struct Timer : pio_device {
+struct Clock : pio_device {
   static const pio_addr_t RTC_PORT = 0x48;
 
-  Timer(Ports& ports) {
+  Clock(Ports& ports) {
     for (pio_addr_t port = RTC_PORT; port <= RTC_PORT + 3; port++)
       register_port(ports, port);
     
