@@ -266,6 +266,14 @@ void Decoder::decode_E_gp5() {
   current_decode_entry = &groups_table[5][ModRM.reg_op];
 }
 
+void Decoder::decode_M_gp7() {
+  ModRM_decode();
+  Assert(ModRM.mod != 3, "Invalid lea operand! (#UD)");
+  op_immd = ModRM_get_mem_vaddr(); 
+  dest = &op_immd;
+  current_decode_entry = &groups_table[7][ModRM.reg_op];
+}
+
 void Decoder::decode_wrapper() {
   operand_size = SIZE_32;
   opcode = fetcher.fetch<uint8_t>();

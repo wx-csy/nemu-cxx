@@ -8,10 +8,31 @@ struct MMU {
 private:
   Memory& memory;
   paddr_t address_translate(vaddr_t addr);
+  
+  bool write_operand_flag = false;
+  uint32_t operand_tmp;
+  vaddr_t operand_addr;
+  SIZE operand_size;
 
 public:
   MMU(Memory& memory);
   
+  union {
+    struct {
+      uint32_t unused:31;
+      uint32_t present:1;
+    } cr0;
+    uint32_t CR0;
+  };
+
+  union {
+    struct {
+      uint32_t unused:12;
+      uint32_t pbtr:20;
+    } cr3;
+    uint32_t CR3;
+  };
+
   uint32_t vaddr_read(vaddr_t addr, SIZE size);
   void vaddr_write(vaddr_t addr, uint32_t data, SIZE size);
   

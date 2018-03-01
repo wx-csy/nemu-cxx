@@ -78,7 +78,7 @@ struct Decoder {
   void decode_O2a();
   void decode_a2O(); 
   void decode_IO_Ib();
-  void decode_IO_dx();
+  void decode_IO_dx(); // the port number is stored in op_immd
 
   // Ternary decoder
   void decode_I_E2G(); // for imul, the imm must be accessed thru op_immd
@@ -96,7 +96,7 @@ struct Decoder {
   void decode_E_gp3();
   void decode_E_gp4();
   void decode_E_gp5();
-  void decode_group7();
+  void decode_M_gp7();
   
 };
 

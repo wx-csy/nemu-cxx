@@ -36,6 +36,15 @@ struct CPU {
       uint8_t _8[2];
     } gpr[8];
   };
+  
+  uint16_t cs;
+
+  struct {
+    uint16_t limit;
+    uint32_t base;
+  } idtr;
+
+  bool INTR;
 
   union {
     struct {
@@ -96,6 +105,7 @@ struct CPU {
   // ---------- Controller ----------
   uint32_t eip_before_exec;
   void exec_wrapper();
+  void raise_intr(uint8_t NO, vaddr_t ret_addr);
 };
 
 #endif

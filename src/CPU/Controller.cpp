@@ -21,9 +21,23 @@ void CPU::exec_wrapper() {
       (this->exec32.*(decoder.current_decode_entry->exec32_helper))();
       break;
     default:
-      // TODO: emit more hints
       panic("Unexpected operand size");
   }
   mmu.write_operand();
+}
+
+void CPU::raise_intr(uint8_t NO, vaddr_t ret_addr) {
+  exec32.push(efl);
+  exec32.push(cs);
+  exec32.push(ret_addr);
+  eflags.IF = 0;
+  vaddr_t desc_addr = idtr.base + (NO << 3);
+  uint32_t desc_low, desc_high;
+  desc_low = mmu.vaddr_read<uint32_t>(desc_addr);
+  desc_high = mmu.vaddr_read<uint32_t>(desc_addr + 4);
+  vaddr_t int_addr;
+  int_addr = ((desc_high >> 16) << 16) | ((desc_low << 16) >> 16);
+  
+  fetcher.eip = int_addr;
 }
 

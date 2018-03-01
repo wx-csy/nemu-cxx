@@ -60,7 +60,9 @@ struct Executor {
   void MOVZB(); // movzbw and movzbl
   void MOVZW(); // movsbw and movsbl
   void LEA();
-  
+  void PUSHA();
+  void POPA();  
+
   // control instructions
   void JMP();
   void Jcc();
@@ -74,6 +76,14 @@ struct Executor {
   // system instructions
   void IN();
   void OUT();
+  void LIDT();
+  void INT();
+  void IRET();
+  void MOV_r2cr();
+  void MOV_cr2r();
+
+  void push(T x);
+  T pop();
 
 private:
   void update_ZFSFPF(T x);
@@ -83,10 +93,6 @@ private:
   void sub_set_CF(T a, T b, T* c);
   void sub_set_OF(T a, T b, T* c);
   void imul_set_CFOF(T a, T b, T* c);
-
-  void push(T x);
-  T pop();
-
 };
 
 #endif

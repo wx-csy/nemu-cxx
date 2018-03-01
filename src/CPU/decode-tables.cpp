@@ -75,7 +75,7 @@ const Decoder::decode_entry Decoder::opcode_table[256] = {
   /* 0x58 */ I(r, POP), I(r, POP), I(r, POP), I(r, POP),
   /* 0x5c */ I(r, POP), I(r, POP), I(r, POP), I(r, POP),
 
-  /* 0x60 */ EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0x60 */ IE(PUSHA), IE(POPA), EMPTY, EMPTY,
   /* 0x64 */ EMPTY, EMPTY, SZ(SIZE_16), EMPTY,
   /* 0x68 */ I(I, PUSH), EMPTY, I(Ib, PUSH), EMPTY,
   /* 0x6c */ EMPTY, EMPTY, EMPTY, EMPTY,
@@ -108,8 +108,7 @@ const Decoder::decode_entry Decoder::opcode_table[256] = {
   /* 0xc0 */ GB(Ib2E_gp2), G(Ib2E_gp2), EMPTY, IE(RET),
   /* 0xc4 */ EMPTY, EMPTY, IB(I2E, MOV), I(I2E, MOV),
   /* 0xc8 */ EMPTY, IE(LEAVE), EMPTY, EMPTY,
-  /* 0xcc */ EMPTY, EMPTY, EMPTY, EMPTY,
-
+  /* 0xcc */ EMPTY, IB(I, INT), EMPTY, IE(IRET),
   
   /* 0xd0 */ GB(one2E_gp2), G(one2E_gp2), GB(cl2E_gp2), G(cl2E_gp2),
   /* 0xd4 */ EMPTY, EMPTY, IE(NEMU_TRAP), EMPTY,
@@ -128,7 +127,7 @@ const Decoder::decode_entry Decoder::opcode_table[256] = {
 };
 
 const Decoder::decode_entry Decoder::twobyte_opcode_table[256] = {
-  /* 0x00 */ EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0x00 */ EMPTY, G(M_gp7), EMPTY, EMPTY,
   /* 0x04 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x08 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x0c */ EMPTY, EMPTY, EMPTY, EMPTY,
@@ -138,7 +137,7 @@ const Decoder::decode_entry Decoder::twobyte_opcode_table[256] = {
   /* 0x18 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x1c */ EMPTY, EMPTY, EMPTY, EMPTY,
 
-  /* 0x20 */ EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0x20 */ I(G2E, MOV_cr2r), EMPTY, I(E2G, MOV_r2cr), EMPTY,
   /* 0x24 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x28 */ EMPTY, EMPTY, EMPTY, EMPTY,
   /* 0x2c */ EMPTY, EMPTY, EMPTY, EMPTY,
@@ -239,7 +238,7 @@ const Decoder::decode_entry Decoder::groups_table[8][8] = {
   /* 0x64 */ EMPTY, EMPTY, EMPTY, EMPTY,
 },
 { // GROUP 7
-  /* 0x70 */ EMPTY, EMPTY, EMPTY, EMPTY,
+  /* 0x70 */ EMPTY, EMPTY, EMPTY, IE(LIDT),
   /* 0x74 */ EMPTY, EMPTY, EMPTY, EMPTY,
 }
 };
