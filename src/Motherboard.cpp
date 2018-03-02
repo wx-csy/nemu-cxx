@@ -16,7 +16,7 @@ namespace Motherboard {
   
   Ports ports;
 
-#if defined HAS_MMIO
+#ifdef HAS_MMIO
   VGA vga(memory);
   Keyboard keyboard(ports);
 #endif
@@ -30,7 +30,7 @@ namespace Motherboard {
   void mainloop() {
     while (true) {
       std::this_thread::sleep_for(std::chrono::milliseconds(10));
-#if defined HAS_MMIO
+#ifdef HAS_MMIO
       vga.update();
 #endif
       cpu.NO_INTR.clear();

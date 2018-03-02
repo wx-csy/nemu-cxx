@@ -47,10 +47,12 @@ void Executor<T>::ADD() {
 template <typename T>
 void Executor<T>::ADC() {
   T temp;
-  add_set_OF(*dest, *src, &temp);
+  T destval = *dest, srcval = *src;
+  add_set_OF(destval, srcval, &temp);
   if (!cpu.eflags.OF) add_set_OF(temp, cpu.eflags.CF, &temp);
-  add_set_CF(*dest, cpu.eflags.CF, dest);
-  if (!cpu.eflags.CF) add_set_CF(*dest, *src, dest); else *dest += *src;
+  add_set_CF(destval, cpu.eflags.CF, &destval);
+  if (!cpu.eflags.CF) add_set_CF(destval, srcval, &destval); else destval += srcval;
+  *dest = destval;
   update_ZFSFPF(*dest);  
 }
 
@@ -65,10 +67,12 @@ void Executor<T>::SUB() {
 template <typename T>
 void Executor<T>::SBB() {
   T temp;
-  sub_set_OF(*dest, *src, &temp);
+  T destval = *dest, srcval = *src;
+  sub_set_OF(destval, srcval, &temp);
   if (!cpu.eflags.OF) sub_set_OF(temp, cpu.eflags.CF, &temp);
-  sub_set_CF(*dest, cpu.eflags.CF, dest);
-  if (!cpu.eflags.CF) sub_set_CF(*dest, *src, dest); else *dest -= *src;
+  sub_set_CF(destval, cpu.eflags.CF, &destval);
+  if (!cpu.eflags.CF) sub_set_CF(destval, srcval, &destval); else destval -= srcval;
+  *dest = destval;
   update_ZFSFPF(*dest);
 }
 

@@ -6,10 +6,9 @@
 
 struct MMU {
   Memory& memory;
-  
-private:
   paddr_t address_translate(vaddr_t addr);
-  
+ 
+private: 
   bool write_operand_flag = false;
   uint32_t operand_tmp;
   vaddr_t operand_addr;

@@ -19,6 +19,11 @@ const std::map<std::string, Debugger::cmd_entry> Debugger::cmd_table = {
 Debugger::Debugger(CPU& cpu, Memory& memory) : 
   cpu(cpu), memory(memory)
 { 
+
+#ifdef DIFF_TEST
+  init_difftest();
+  init_qemu_reg();
+#endif
 }
 
 static const uint8_t default_image [] = {
@@ -34,13 +39,14 @@ static const uint8_t default_image [] = {
 };
 
 void Debugger::load_image(const char* path) {
+  long size;
   if (path == NULL) load_default_image();
   else {
     FILE *fp = fopen(path, "rb");
     Assert(fp, "Can not open image `%s'", path);
     Log("Image `%s' successfully loaded!", path);
     fseek(fp, 0, SEEK_END);
-    uint32_t size = ftell(fp);
+    size = ftell(fp);
     fseek(fp, 0, SEEK_SET);
     int ret = fread(&memory.pmem[CPU::ENTRY_START], size, 1, fp);
     if (ret != 1) {
@@ -116,7 +122,7 @@ void Debugger::cmd_i(std::istringstream& args) {
   int num_of_entries = 12;
   for (int i=0; i<num_of_entries; i++) {
     if (i < 8) printf("$gpr[%d]\t0x%08x\n", i, cpu.gpr[i]._32);
-    else if (i == 9) printf("$eip\t0x%08x\n", cpu.fetcher.eip);
+    else if (i == 9) printf("$eip\t0x%08x = phy. 0x%08x\n", cpu.fetcher.eip, cpu.mmu.address_translate(cpu.fetcher.eip));
     else if (i == 10) printf("$efl\t0x%08x\n", cpu.efl);
   }
 }

@@ -6,7 +6,7 @@ static inline bool is_cross_page(vaddr_t addr, SIZE size) {
   return ((addr ^ (addr + size - 1)) >> 12) != 0;
 }
 
-MMU::MMU(Memory& memory) : memory(memory), CR0(0), CR3(0) {}
+MMU::MMU(Memory& memory) : memory(memory), CR0(0x60000011), CR3(0) {}
 
 paddr_t MMU::address_translate(vaddr_t addr) {
   if (!cr0.present) return addr;

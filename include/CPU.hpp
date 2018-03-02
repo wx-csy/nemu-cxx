@@ -38,7 +38,7 @@ struct CPU {
     } gpr[8];
   };
   
-  uint16_t cs;
+  uint16_t cs = 0x8;
 
   struct {
     uint16_t limit;
@@ -53,7 +53,7 @@ struct CPU {
                _reserved_2:1, ZF:1, SF:1, TF:1, IF:1, DF:1, OF:1, IOPL:2,
                NT:1, _reserved_3:1, RF:1, VM:1, _reserved_4:14;
     } eflags;
-    uint32_t efl;
+    uint32_t efl = 0x2;
   };
 
   void* get_reg_ptr(unsigned id, SIZE sz) {
