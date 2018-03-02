@@ -13,6 +13,10 @@ private:
   uint32_t operand_tmp;
   vaddr_t operand_addr;
   SIZE operand_size;
+  
+#ifdef HAS_TLB
+  uint32_t TLB[256];
+#endif
 
 public:
   MMU(Memory& memory);
@@ -40,7 +44,8 @@ public:
   T vaddr_read(vaddr_t addr);
   template <typename T>
   void vaddr_write(vaddr_t addr, T data);
-
+  
+  void TLB_flush();
   void* memory_access(vaddr_t addr, SIZE sz);
   void write_operand();
 };

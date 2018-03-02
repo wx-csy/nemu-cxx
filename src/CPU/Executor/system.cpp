@@ -45,7 +45,11 @@ template <typename T>
 void Executor<T>::MOV_r2cr() {
   switch (cpu.decoder.ModRM.reg_op) {
     case 0: cpu.mmu.CR0 = *src; return ;
-    case 3: cpu.mmu.CR3 = *src; return ;
+    case 3: cpu.mmu.CR3 = *src; 
+#ifdef HAS_TLB
+            cpu.mmu.TLB_flush();
+#endif
+            return ;
     default: panic("Register not supported!");
   }
 }

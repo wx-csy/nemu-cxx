@@ -1,3 +1,4 @@
+#include <cstring>
 #include "common.h"
 #include "CPU.hpp"
 #include "CPU/MMU.hpp"
@@ -30,6 +31,13 @@ paddr_t MMU::address_translate(vaddr_t addr) {
   } dir_entry, page_entry;
   
   // Note: accessed and dirty bits are not implemented!
+
+#ifdef HAS_TLB
+  uint32_t cache_line = (addr >> 12) & 0xff;
+  if ((addr | 0xfff) == TLB[cache_line])
+    return TLB[cache_line] | vaddr.offset;
+#endif
+  
   paddr_t dir_entry_addr = (cr3.pbtr << 12) | (vaddr.dir << 2);
   dir_entry.pte_u32 = memory.paddr_read<uint32_t>(dir_entry_addr);
   Assert(dir_entry.present, "Page directory not present.\n"
@@ -43,6 +51,12 @@ paddr_t MMU::address_translate(vaddr_t addr) {
   paddr_t paddr = (page_entry.page_addr << 12) | (vaddr.offset);
   return paddr;
 }
+
+#ifdef HAS_TLB
+void MMU::TLB_flush() {
+  memset(TLB, 0, sizeof TLB);
+}
+#endif
 
 template <typename T>
 T MMU::vaddr_read(vaddr_t addr) {

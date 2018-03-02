@@ -13,7 +13,7 @@ CC = gcc
 CXX = g++
 LD = g++
 INCLUDES  = $(addprefix -I, $(INC_DIR))
-CXXFLAGS += -std=c++11 -O2 -MMD -Wall -Werror -ggdb $(INCLUDES)
+CXXFLAGS += -std=c++11 -O2 -MMD -Wall -Werror -ggdb -fPIC $(INCLUDES)
 
 # Files to be compiled
 SRCS = $(shell find src/ -name "*.cpp")

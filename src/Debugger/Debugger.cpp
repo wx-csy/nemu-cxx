@@ -122,7 +122,7 @@ void Debugger::cmd_i(std::istringstream& args) {
   int num_of_entries = 12;
   for (int i=0; i<num_of_entries; i++) {
     if (i < 8) printf("$gpr[%d]\t0x%08x\n", i, cpu.gpr[i]._32);
-    else if (i == 9) printf("$eip\t0x%08x = phy. 0x%08x\n", cpu.fetcher.eip, cpu.mmu.address_translate(cpu.fetcher.eip));
+    else if (i == 9) printf("$eip\t0x%08x\n", cpu.fetcher.eip);
     else if (i == 10) printf("$efl\t0x%08x\n", cpu.efl);
   }
 }
