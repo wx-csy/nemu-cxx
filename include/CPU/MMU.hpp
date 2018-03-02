@@ -5,8 +5,9 @@
 #include "Memory.hpp"
 
 struct MMU {
-private:
   Memory& memory;
+  
+private:
   paddr_t address_translate(vaddr_t addr);
   
   bool write_operand_flag = false;

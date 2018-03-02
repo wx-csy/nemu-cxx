@@ -24,6 +24,13 @@ void CPU::exec_wrapper() {
       panic("Unexpected operand size");
   }
   mmu.write_operand();
+
+  const uint8_t TIMER_IRQ = 32;
+  if (eflags.IF) {
+    if (!NO_INTR.test_and_set()) {
+      raise_intr(TIMER_IRQ, fetcher.eip);
+    }
+  }
 }
 
 void CPU::raise_intr(uint8_t NO, vaddr_t ret_addr) {

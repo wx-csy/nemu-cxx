@@ -29,15 +29,19 @@ namespace Motherboard {
 
   void mainloop() {
     while (true) {
-      std::this_thread::sleep_for(std::chrono::milliseconds(20));
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
 #if defined HAS_MMIO
       vga.update();
+#endif
+      cpu.NO_INTR.clear();
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+#if defined HAS_MMIO
       keyboard.update();
 #endif
+      cpu.NO_INTR.clear();
     }
   }
 };
-
 
 FILE* log_fp;
 
@@ -62,7 +66,7 @@ int main(int argc, char* argv[]) {
   }
   printf("Welcome to NEMU!\n");
   Motherboard::debugger.load_image(img_path);
-
+  
   std::thread th(&Debugger::mainloop, Motherboard::debugger);
   
   Motherboard::mainloop();

@@ -24,7 +24,7 @@ template <typename T>
 void Executor<T>::LIDT() {
   Assert(sizeof(T) == 4, "Unimplemented");
   cpu.idtr.limit = cpu.mmu.vaddr_read<uint16_t>(*dest);
-  cpu.idtr.base = cpu.mmu.vaddr_read<uint32_t>(*dest);
+  cpu.idtr.base = cpu.mmu.vaddr_read<uint32_t>(*dest + 2);
 }
 
 template <typename T>

@@ -39,8 +39,9 @@ paddr_t MMU::address_translate(vaddr_t addr) {
   page_entry.pte_u32 = memory.paddr_read<uint32_t>(page_entry_addr);
   Assert(page_entry.present, "Page table not present.\n"
       "(On translating virtual address 0x%x)\n", addr);
-
-  return (page_entry.page_addr << 12) | (vaddr.offset);
+  
+  paddr_t paddr = (page_entry.page_addr << 12) | (vaddr.offset);
+  return paddr;
 }
 
 template <typename T>

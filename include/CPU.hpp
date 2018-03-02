@@ -2,6 +2,7 @@
 #define __CPU_HPP__
 
 #include <type_traits>
+#include <atomic>
 #include "common.h"
 #include "Memory.hpp"
 #include "devices/pio_device.hpp"
@@ -17,7 +18,7 @@ struct CPU {
   Ports& ports;
   
   CPU(Memory& memory, Ports& ports); 
-
+  
   // ---------- General Purpose Register Set ----------
   union {
     struct {
@@ -44,7 +45,7 @@ struct CPU {
     uint32_t base;
   } idtr;
 
-  bool INTR;
+  std::atomic_flag NO_INTR;
 
   union {
     struct {

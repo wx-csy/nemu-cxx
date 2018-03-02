@@ -8,6 +8,7 @@ CPU::CPU(Memory& memory, Ports& ports) :
   decoder(*this),
   exec32(*this), exec16(*this), exec8(*this)
 {
+  NO_INTR.test_and_set();
   fetcher.eip = ENTRY_START; 
 }
 
