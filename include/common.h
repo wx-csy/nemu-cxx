@@ -4,7 +4,7 @@
 // #define DEBUG
 #define LOG
 #define HAS_MMIO
-// #define HAS_TLB
+#define HAS_TLB
 
 #include <cstdint>
 #include <cstddef>

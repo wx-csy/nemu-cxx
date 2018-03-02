@@ -34,8 +34,8 @@ paddr_t MMU::address_translate(vaddr_t addr) {
 
 #ifdef HAS_TLB
   uint32_t cache_line = (addr >> 12) & 0xff;
-  if ((addr | 0xfff) == TLB[cache_line])
-    return TLB[cache_line] | vaddr.offset;
+  if ((addr | 0xfff) == TLB_tag[cache_line])
+    return TLB_pp_addr[cache_line] | vaddr.offset;
 #endif
   
   paddr_t dir_entry_addr = (cr3.pbtr << 12) | (vaddr.dir << 2);
@@ -47,14 +47,18 @@ paddr_t MMU::address_translate(vaddr_t addr) {
   page_entry.pte_u32 = memory.paddr_read<uint32_t>(page_entry_addr);
   Assert(page_entry.present, "Page table not present.\n"
       "(On translating virtual address 0x%x)\n", addr);
-  
+ 
   paddr_t paddr = (page_entry.page_addr << 12) | (vaddr.offset);
+#ifdef HAS_TLB
+  TLB_tag[cache_line] = addr | 0xfff;
+  TLB_pp_addr[cache_line] = paddr & ~0xfff;
+#endif
   return paddr;
 }
 
 #ifdef HAS_TLB
 void MMU::TLB_flush() {
-  memset(TLB, 0, sizeof TLB);
+  memset(TLB_tag, 0, sizeof TLB_tag);
 }
 #endif
 

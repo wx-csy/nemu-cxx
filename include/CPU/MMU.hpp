@@ -15,7 +15,8 @@ private:
   SIZE operand_size;
   
 #ifdef HAS_TLB
-  uint32_t TLB[256];
+  uint32_t TLB_tag[256];
+  uint32_t TLB_pp_addr[256];
 #endif
 
 public:
